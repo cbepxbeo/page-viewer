@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "page-viewer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cbepxbeo/page-viewer.git",
+      "state" : {
+        "branch" : "develop",
+        "revision" : "5773b2472f00abf84b2bc93d664de355f68704c5"
+      }
+    }
+  ],
+  "version" : 2
+}
