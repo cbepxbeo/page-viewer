@@ -71,16 +71,15 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
         direction = index > last ? .forward : .reverse
         if last == index { return }
         
-        context.coordinator.lastIndex = index
-        
         DispatchQueue.main.async {
+            context.coordinator.lastIndex = index
+            pageViewController.setViewControllers(
+                [context.coordinator.controllers[index]], direction: direction, animated: true)
+            
             if context.coordinator.pointsPage.wrappedValue != index{
                 context.coordinator.pointsPage.wrappedValue = index
             }
         }
-        
-        pageViewController.setViewControllers(
-            [context.coordinator.controllers[index]], direction: direction, animated: true)
 
     }
 
