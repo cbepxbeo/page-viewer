@@ -10,29 +10,45 @@
 import SwiftUI
 
 
-struct PageViewerComponent<A: RandomAccessCollection, C: View>: View where C : Identifiable {
-    public init(_ array: A, @ViewBuilder content: @escaping (A.Index, A.Element) -> C){
+struct PageViewerComponent<A: RandomAccessCollection, C: View>: View {
+    
+    
+    @Binding var currentIndex: Int
+    
+    public init(_ array: A, currentIndex: Binding<Int>? = nil, @ViewBuilder content: @escaping (A.Index, A.Element) -> C){
         self.views = Array(zip(array.indices, array)).map { (index, element) in
             content(index, element)
         }
+        self._currentIndex = currentIndex ?? .init(get: {0}, set: { _ in })
+    }
+    public init(_ array: A, currentIndex: Binding<Int>? = nil, @ViewBuilder content: @escaping (A.Element) -> C){
+        self.views = Array(array).map { content($0) }
+        self._currentIndex = currentIndex ?? .init(get: {0}, set: { _ in })
     }
     private let views: [C]
     
     var body: some View {
-        PagesViewer(views: views)
+        PagesViewer(views: views, currentIndex: currentIndex)
     }
 }
 
 extension PageViewerComponent where A == [Any] {
-    init(views: [C]){
+    init(views: [C], currentIndex: Binding<Int>?){
         self.views = views
+        self._currentIndex = currentIndex ?? .init(get: {0}, set: { _ in })
     }
 }
 
 
-fileprivate struct PagesViewer<T>: UIViewControllerRepresentable where T:View, T:Identifiable {
+fileprivate struct PagesViewer<T>: UIViewControllerRepresentable where T : View{
     
     let views: [T]
+    @Binding var currentIndex: Int
+    
+    init(views: [T], currentIndex: Binding<Int>) {
+        self.views = views
+        self._currentIndex = currentIndex
+    }
     
     internal func makeUIViewController(context: Context) -> UIPageViewController {
         let pageViewController = UIPageViewController(
@@ -40,13 +56,15 @@ fileprivate struct PagesViewer<T>: UIViewControllerRepresentable where T:View, T
             navigationOrientation: .horizontal)
         pageViewController.dataSource = context.coordinator
         pageViewController.delegate = context.coordinator
-        pageViewController.setViewControllers(
-            [context.coordinator.root], direction: .forward, animated: true)
+        if let root = context.coordinator.root {
+            pageViewController.setViewControllers(
+                [root], direction: .forward, animated: true)
+        }
         return pageViewController
     }
     
     func makeCoordinator() -> PagesViewerCoordinator<T> {
-        PagesViewerCoordinator(views)
+        PagesViewerCoordinator(views, currentIndex: <#T##Binding<Int>#>)
     }
     
     
@@ -57,68 +75,71 @@ fileprivate struct PagesViewer<T>: UIViewControllerRepresentable where T:View, T
 }
 
 
-fileprivate final class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDataSource, UIPageViewControllerDelegate where T:View, T:Identifiable {
-    
-    let views: [T]
-    let root: UIHostingController<T>
-    var indexStorage: [T.ID: Int]
-    
-    init(_ views: [T]) {
-        self.views = views
-        self.root = UIHostingController(rootView: views.first!)
-        self.indexStorage = PagesViewerCoordinator<T>.getIndexStorage(views)
+fileprivate final class CustomUIHostingController<Content>: UIHostingController<Content> where Content: View {
+    var index: Int
+    init(index: Int, rootView: Content) {
+        self.index = index
+        super.init(rootView: rootView)
     }
+    @MainActor required dynamic init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+fileprivate final class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDataSource, UIPageViewControllerDelegate where T:View {
+    
+    let controllers: [CustomUIHostingController<T>]
+    let root: CustomUIHostingController<T>?
+    @Binding var currentIndex: Int
+    
+    init(_ views: [T], currentIndex: Binding<Int>) {
+        var temp: [CustomUIHostingController<T>] = []
+        for (index, element) in views.enumerated() {
+            temp.append(CustomUIHostingController(index: index, rootView: element))
+        }
+        self.controllers = temp
+        self._currentIndex = currentIndex
+        self.root = controllers.first
+    }
+    
     
     func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController) -> UIViewController? {
             guard
-                let hosting = viewController as? UIHostingController<T>
+                let hosting = viewController as? CustomUIHostingController<T>
             else {
                 return nil
             }
-            
-            let index: Int
-            
-            if indexStorage[hosting.rootView.id] != nil {
-               index = indexStorage[hosting.rootView.id]!
-            } else if let temp = views.firstIndex(where: { $0.id == hosting.rootView.id }) {
-                index = temp
-            } else {
-                return nil
-            }
-            
-            let bool = index == 0
-            return UIHostingController(rootView: bool ? views.last! : views[index - 1])
-        }
+            return  hosting.index == 0 ? controllers.last : controllers[hosting.index - 1]
+    }
+    
     
     func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerAfter viewController: UIViewController) -> UIViewController? {
-            guard let hosting = viewController as? UIHostingController<T>
-            else { return nil }
+            guard
+                let hosting = viewController as? CustomUIHostingController<T>
+            else {
+                return nil
+            }
+            return  hosting.index + 1 == controllers.count ? controllers.first : controllers[hosting.index + 1]
+        }
+    
+    
+    internal func pageViewController(
+        _ pageViewController: UIPageViewController,
+        didFinishAnimating finished: Bool,
+        previousViewControllers: [UIViewController],
+        transitionCompleted completed: Bool) {
             
-            let index: Int
-            if indexStorage[hosting.rootView.id] != nil {
-                index = indexStorage[hosting.rootView.id]!
-            } else if let temp = views.firstIndex(where: { $0.id == hosting.rootView.id }) {
-                index = temp
-            } else { return nil }
-
-            let bool = index + 1 == views.count
+            if self.currentIndex == nil { return }
             
-            return UIHostingController(rootView: bool ? views.first! : views[index + 1])
+            guard
+                let hosting = pageViewController.viewControllers?.first as? CustomUIHostingController<T>
+            else {
+                return
+            }
+            self.currentIndex?.wrappedValue = hosting.index
         }
 }
-
-
-extension PagesViewerCoordinator {
-    class func getIndexStorage(_ array: [T]) -> [T.ID: Int] {
-        var temp: [T.ID : Int] = [:]
-        for (index, element) in array.enumerated() {
-            temp[element.id] = index
-        }
-        return temp
-    }
-}
-
