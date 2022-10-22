@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		7484207829043E3300297219 /* ExampleProjectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7484207729043E3300297219 /* ExampleProjectApp.swift */; };
-		7484207A29043E3300297219 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7484207929043E3300297219 /* ContentView.swift */; };
 		7484207C29043E3400297219 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7484207B29043E3400297219 /* Assets.xcassets */; };
 		7484208929043EAB00297219 /* PageViewer in Frameworks */ = {isa = PBXBuildFile; productRef = 7484208829043EAB00297219 /* PageViewer */; };
 		7484208B29043ECC00297219 /* RenderFromViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7484208A29043ECC00297219 /* RenderFromViews.swift */; };
@@ -21,7 +20,6 @@
 /* Begin PBXFileReference section */
 		7484207429043E3300297219 /* ExampleProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExampleProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7484207729043E3300297219 /* ExampleProjectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleProjectApp.swift; sourceTree = "<group>"; };
-		7484207929043E3300297219 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7484207B29043E3400297219 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7484208A29043ECC00297219 /* RenderFromViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderFromViews.swift; sourceTree = "<group>"; };
 		7484208C2904444500297219 /* RenderFromViewsWithPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderFromViewsWithPoint.swift; sourceTree = "<group>"; };
@@ -72,7 +70,6 @@
 			children = (
 				7484207B29043E3400297219 /* Assets.xcassets */,
 				7484207729043E3300297219 /* ExampleProjectApp.swift */,
-				7484207929043E3300297219 /* ContentView.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -166,7 +163,6 @@
 			files = (
 				7484208B29043ECC00297219 /* RenderFromViews.swift in Sources */,
 				7484208D2904444500297219 /* RenderFromViewsWithPoint.swift in Sources */,
-				7484207A29043E3300297219 /* ContentView.swift in Sources */,
 				7484207829043E3300297219 /* ExampleProjectApp.swift in Sources */,
 				74C162222904705D00C7E13F /* RenderWithPointsStyle.swift in Sources */,
 				7495E99029044D9300295729 /* RenderWithUsingIndexAndPage.swift in Sources */,

@@ -4,8 +4,8 @@ import PageViewer
 struct RenderWithPointsStyle: View {
     var body: some View {
         PageViewerView(views: [Color.red, Color.yellow])
-            .pointsStyle(ExampleStyle())
             .pagePoints(true)
+            .pointsStyle(ExampleStyle())
             
     }
 }
@@ -18,7 +18,7 @@ struct ExampleStyle: PagesViewerPointStyle {
     var bodyActiveColor: Color? = .orange
     var borderActiveColor: Color? = .blue
     var size: CGFloat? = 44
-    var borderSize: CGFloat? = 1
+    var borderSize: CGFloat? = 5
     var spacing: CGFloat? = 15
 }
 

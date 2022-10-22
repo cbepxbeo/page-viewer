@@ -8,10 +8,6 @@
 //
 import SwiftUI
 
-public enum PageViewerPointPosition {
-    case bottom, top
-}
-
 public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
     //----------public
     public init(_ array: A, currentIndex: Binding<Int>, @ViewBuilder content: @escaping (A.Index, A.Element) -> C){
@@ -47,12 +43,21 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
         self.currentPage = currentPage
     }
     
+    
+    //-----default
     @State private var indexToPoint: Int = 0
     private var showPoints: Bool = false
     private var style: PagesViewerPointStyle = _PointStyle.default
     private var forceMoveToNextPoint: Bool = true
     private var pointPosition: PageViewerPointPosition = .bottom
+    
+    //-----from init
+    private let currentIndex: Binding<Int>?
+    private let currentPage: Binding<Int>?
+    private let views: [C]
 
+    
+    //MARK: mod.
     public func pagePoints(_ showPoints: Bool) -> PageViewerView {
         var view = self
         view.showPoints = showPoints
@@ -83,28 +88,12 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
         return view
     }
     
-    private let currentIndex: Binding<Int>?
-    private let currentPage: Binding<Int>?
-    private let views: [C]
-    
-    @ViewBuilder private func getPoint(border: Color, fill: Color, size: CGFloat, borderSize: CGFloat) -> some View {
-        ZStack{
-            Circle()
-                .fill(border)
-            Circle()
-                .fill(fill)
-                .padding(borderSize)
-                .blur(radius: 0.5)
-        }
-        .frame(width: size, height: size)
-    }
-    
+    //MARK: view
     public var body: some View {
         switch pointPosition {
         case .bottom:
             VStack{
                 PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
-                    
                 self._viewPoints
                     .opacity(style._opacity)
                     .padding(.top, style._padding)
@@ -119,7 +108,19 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
         }
     }
     
-    @ViewBuilder var _viewPoints: some View {
+    @ViewBuilder private func getPoint(border: Color, fill: Color, size: CGFloat, borderSize: CGFloat) -> some View {
+        ZStack{
+            Circle()
+                .fill(border)
+            Circle()
+                .fill(fill)
+                .padding(borderSize)
+                .blur(radius: 0.5)
+        }
+        .frame(width: size, height: size)
+    }
+    
+    @ViewBuilder private var _viewPoints: some View {
         if self.showPoints && views.count < 16 {
             Group{
                 GeometryReader{ proxy in

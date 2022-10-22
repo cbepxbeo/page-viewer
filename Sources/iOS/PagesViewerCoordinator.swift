@@ -12,14 +12,6 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
     
     typealias Hosting = PageViewerHostingController
     
-    internal let controllers: [Hosting<AnyView>]
-    internal let root: Hosting<AnyView>?
-    private let currentIndex: Binding<Int>?
-    private let currentPage: Binding<Int>?
-    internal let pointsPage: Binding<Int>
-    internal var lastIndex: Int
-    private let forceMoveToNextPoint: Bool
-    
     internal init(_ forceMoveToNextPoint: Bool, _ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>) {
         var temp: [Hosting<AnyView>] = []
         for (index, element) in views.enumerated() {
@@ -34,6 +26,15 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         self.lastIndex = currentIndex?.wrappedValue ?? ((currentPage?.wrappedValue ?? 1) - 1)
     }
     
+    internal let controllers: [Hosting<AnyView>]
+    internal let root: Hosting<AnyView>?
+    internal let pointsPage: Binding<Int>
+    internal var lastIndex: Int
+    
+    private let currentIndex: Binding<Int>?
+    private let currentPage: Binding<Int>?
+    private let forceMoveToNextPoint: Bool
+    
     internal func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController) -> UIViewController? {
@@ -45,8 +46,7 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
             let index = hosting.index == 0 ? controllers.count - 1 : hosting.index - 1
             self.lastIndex = index
             return controllers[index]
-    }
-    
+        }
     
     internal func pageViewController(
         _ pageViewController: UIPageViewController,
@@ -61,13 +61,11 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
             return controllers[index]
         }
     
-    
     internal func pageViewController(
         _ pageViewController: UIPageViewController,
         didFinishAnimating finished: Bool,
         previousViewControllers: [UIViewController],
         transitionCompleted completed: Bool) {
-            
             guard
                 let hosting = pageViewController.viewControllers?.first as? Hosting<AnyView>
             else {
@@ -85,18 +83,17 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
     
     internal func pageViewController(
         _ pageViewController: UIPageViewController,
-        willTransitionTo pendingViewControllers: [UIViewController]
-    ){
-        guard
-            let hosting = pendingViewControllers.first as? Hosting<AnyView>,
-            forceMoveToNextPoint
-        else {
-            return
-        }
-        DispatchQueue.main.async {
-            if hosting.index != self.pointsPage.wrappedValue {
-                self.pointsPage.wrappedValue = hosting.index
+        willTransitionTo pendingViewControllers: [UIViewController]){
+            guard
+                let hosting = pendingViewControllers.first as? Hosting<AnyView>,
+                forceMoveToNextPoint
+            else {
+                return
+            }
+            DispatchQueue.main.async {
+                if hosting.index != self.pointsPage.wrappedValue {
+                    self.pointsPage.wrappedValue = hosting.index
+                }
             }
         }
-    }
 }
