@@ -35,84 +35,117 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
         }
         self.currentIndex = currentIndex
         self.currentPage = currentPage
-        self.__indexToPoint = State(initialValue: 0)
     }
     
     private init(_ array: A, currentIndex: Binding<Int>? = nil, currentPage: Binding<Int>? = nil, @ViewBuilder content: @escaping (A.Element) -> C){
         self.views = Array(array).map { content($0) }
         self.currentIndex = currentIndex
         self.currentPage = currentPage
-        self.__indexToPoint = State(initialValue: 0)
     }
     
-
-    @State private var _indexToPoint: Int
+    @State private var indexToPoint: Int = 0
+    private var showPoints: Bool = false
+    private var style: PagesViewerPointStyle = _PointStyle.default
+    
+    public func pagePoints(_ showPoints: Bool) -> some View {
+        var view = self
+        view.showPoints = showPoints
+        return view
+    }
+    
+    public func pointsStyle(_ style: PagesViewerPointStyle) -> some View {
+        var view = self
+        view.style = style
+        return view
+    }
+    
+    
     private let currentIndex: Binding<Int>?
     private let currentPage: Binding<Int>?
     private let views: [C]
     
-    var indexToPoint: Int {
-        if currentIndex != nil {
-            return currentIndex!.wrappedValue
-        } else if currentPage != nil {
-            return currentPage!.wrappedValue - 1
-        } else {
-            return _indexToPoint
-        }
-    }
-    
-    private func getPoint(border: Color, fill: Color) -> some View {
+    @ViewBuilder private func getPoint(border: Color, fill: Color, size: CGFloat, borderSize: CGFloat) -> some View {
         ZStack{
             Circle()
                 .fill(border)
             Circle()
                 .fill(fill)
-                .padding(1)
+                .padding(borderSize)
+                .blur(radius: 0.5)
         }
-        .frame(width: 20, height: 20)
+        .frame(width: size, height: size)
     }
     
     public var body: some View {
-        viewer
-        HStack{
-            ForEach(0..<views.count, id: \.self){ item in
-                self.getPoint(border: .black, fill: indexToPoint == item ? .gray : .white)
-                    .animation(.spring(), value: indexToPoint)
+        PageViewerUIWrapper(views, currentIndex, currentPage, $indexToPoint)
+        self._viewPoints
+            .opacity(style._opacity)
+            .padding(.top, style._padding)
+    }
+    
+    @ViewBuilder var _viewPoints: some View {
+        if self.showPoints {
+            Group{
+                GeometryReader{ proxy in
+                    HStack(spacing: style._spacing){
+                        let size = (proxy.size.width / CGFloat(views.count)) - (CGFloat(views.count - 1) * style._spacing)
+                        
+                        Spacer()
+                        ForEach(0..<views.count, id: \.self){ item in
+                            self.getPoint(
+                                border: indexToPoint == item ? style._borderActiveColor : style._borderInactiveColor,
+                                fill: indexToPoint == item ? style._bodyActiveColor : style._bodyInactiveColor,
+                                size: style._size > size ? size : style._size,
+                                borderSize: style._borderSize > size ? (size - 1) : style._borderSize
+                            )
+                            .animation(.spring(), value: indexToPoint)
+                        }
+                        Spacer()
+                    }
+                }
             }
+            .frame(maxHeight: style._size + 5)
+        } else {
+            EmptyView()
         }
     }
     
-    @ViewBuilder var viewer: some View {
-        if currentIndex == nil && currentPage == nil {
-            PageViewerUIWrapper(views, $_indexToPoint, nil)
-        } else {
-            PageViewerUIWrapper(views, currentIndex, currentPage)
-        }
-    }
+    
+    
     
 }
 
-extension PageViewerView where A == [Any] {
+public extension PageViewerView where A == [Any] {
     init(views: [C], currentIndex: Binding<Int>){
         self.views = views
         self.currentIndex = currentIndex
         self.currentPage = nil
-        self.__indexToPoint = State(initialValue: 0)
     }
     init(views: [C], currentPage: Binding<Int>){
         self.views = views
         self.currentIndex = nil
         self.currentPage = nil
-        self.__indexToPoint = State(initialValue: 0)
     }
     init(views: [C]){
         self.views = views
         self.currentIndex = nil
         self.currentPage = nil
-        self.__indexToPoint = State(initialValue: 0)
     }
 }
 
 
+fileprivate struct _PointStyle: PagesViewerPointStyle {
+    var opacity: CGFloat?
+    var padding: CGFloat?
+    var borderInactiveColor: Color?
+    var bodyInactiveColor: Color?
+    var bodyActiveColor: Color?
+    var borderActiveColor: Color?
+    var size: CGFloat?
+    var borderSize: CGFloat?
+    var spacing: CGFloat?
+    
+    static let `default`: _PointStyle = .init()
+}
 
 

@@ -16,13 +16,15 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
     internal let root: Hosting<T>?
     private let currentIndex: Binding<Int>?
     private let currentPage: Binding<Int>?
+    internal let pointsPage: Binding<Int>
     internal var lastIndex: Int
     
-    internal init(_ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?) {
+    internal init(_ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>) {
         var temp: [Hosting<T>] = []
         for (index, element) in views.enumerated() {
             temp.append(Hosting(index: index, rootView: element))
         }
+        self.pointsPage = pointsPage
         self.controllers = temp
         self.currentIndex = currentIndex
         self.currentPage = currentPage
