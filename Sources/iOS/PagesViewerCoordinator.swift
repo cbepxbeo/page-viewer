@@ -52,7 +52,7 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         _ pageViewController: UIPageViewController,
         viewControllerAfter viewController: UIViewController) -> UIViewController? {
             guard
-                let hosting = viewController as? Hosting<T>
+                let hosting = viewController as? Hosting<AnyView>
             else {
                 return nil
             }
@@ -73,7 +73,7 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
             //if self.currentIndex == nil && currentPage == nil { return }
             
             guard
-                let hosting = pageViewController.viewControllers?.first as? Hosting<T>
+                let hosting = pageViewController.viewControllers?.first as? Hosting<AnyView>
             else {
                 return
             }
@@ -92,7 +92,7 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         willTransitionTo pendingViewControllers: [UIViewController]
     ){
         guard
-            let hosting = pendingViewControllers.first as? Hosting<T>,
+            let hosting = pendingViewControllers.first as? Hosting<AnyView>,
             forceMoveToNextPoint
         else {
             return
