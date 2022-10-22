@@ -44,7 +44,6 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
             }
             let index = hosting.index == 0 ? controllers.count - 1 : hosting.index - 1
             self.lastIndex = index
-            self.pointsPage.wrappedValue = index + 1
             return controllers[index]
     }
     
@@ -95,7 +94,9 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
             return
         }
         DispatchQueue.main.async {
-            self.pointsPage.wrappedValue = hosting.index
+            if hosting.index != self.pointsPage.wrappedValue {
+                self.pointsPage.wrappedValue = hosting.index
+            }
         }
     }
 }

@@ -47,6 +47,10 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
             direction: UIPageViewController.NavigationDirection
         var index: Int
         
+        count = context.coordinator.controllers.count
+        last = context.coordinator.lastIndex
+        
+        
         if let currentIndex = self.currentIndex?.wrappedValue {
             index = currentIndex
         } else if let currentPage = self.currentPage?.wrappedValue {
@@ -55,14 +59,12 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
             return
         }
         
-        count = context.coordinator.controllers.count
-        last = context.coordinator.lastIndex
-        
-        
         if index >= count && last < count  {
             print("Индекс или Номер страницы вышли за допустимые пределы")
-            self.currentPage?.wrappedValue = 1
-            self.currentIndex?.wrappedValue = 0
+            DispatchQueue.main.async {
+                self.currentPage?.wrappedValue = 1
+                self.currentIndex?.wrappedValue = 0
+            }
             index = 0
         }
         
@@ -70,8 +72,16 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
         if last == index { return }
         
         context.coordinator.lastIndex = index
+        
+        DispatchQueue.main.async {
+            if context.coordinator.pointsPage.wrappedValue != index{
+                context.coordinator.pointsPage.wrappedValue = index
+            }
+        }
+        
         pageViewController.setViewControllers(
             [context.coordinator.controllers[index]], direction: direction, animated: true)
+
     }
 
 }
