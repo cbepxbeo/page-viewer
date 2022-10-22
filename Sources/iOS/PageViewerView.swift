@@ -100,26 +100,23 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
     }
     
     public var body: some View {
-        Group{
-            switch pointPosition {
-            case .bottom:
-                VStack{
-                    PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
-                        .ignoresSafeArea()
-                    self._viewPoints
-                        .opacity(style._opacity)
-                        .padding(.top, style._padding)
-                }
-            case .top:
-                VStack{
-                    self._viewPoints
-                        .opacity(style._opacity)
-                        .padding(.bottom, style._padding)
-                    PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
-                        .ignoresSafeArea()
-                }
+        switch pointPosition {
+        case .bottom:
+            VStack{
+                PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
+                    
+                self._viewPoints
+                    .opacity(style._opacity)
+                    .padding(.top, style._padding)
             }
-        }.ignoresSafeArea()
+        case .top:
+            VStack{
+                self._viewPoints
+                    .opacity(style._opacity)
+                    .padding(.bottom, style._padding)
+                PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
+            }
+        }
     }
     
     @ViewBuilder var _viewPoints: some View {
