@@ -46,16 +46,23 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
     @State private var indexToPoint: Int = 0
     private var showPoints: Bool = false
     private var style: PagesViewerPointStyle = _PointStyle.default
+    private var forceMoveToNextPoint: Bool = true
     
-    public func pagePoints(_ showPoints: Bool) -> some View {
+    public func pagePoints(_ showPoints: Bool) -> PageViewerView {
         var view = self
         view.showPoints = showPoints
         return view
     }
     
-    public func pointsStyle(_ style: PagesViewerPointStyle) -> some View {
+    public func pointsStyle(_ style: PagesViewerPointStyle) -> PageViewerView {
         var view = self
         view.style = style
+        return view
+    }
+    
+    public func forceMove(_ forceMoveToNextPoint: Bool) -> PageViewerView {
+        var view = self
+        view.forceMoveToNextPoint = forceMoveToNextPoint
         return view
     }
     
@@ -77,18 +84,18 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
     }
     
     public var body: some View {
-        PageViewerUIWrapper(views, currentIndex, currentPage, $indexToPoint)
+        PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
         self._viewPoints
             .opacity(style._opacity)
             .padding(.top, style._padding)
     }
     
     @ViewBuilder var _viewPoints: some View {
-        if self.showPoints {
+        if self.showPoints && views.count < 16 {
             Group{
                 GeometryReader{ proxy in
                     HStack(spacing: style._spacing){
-                        let size = (proxy.size.width / CGFloat(views.count)) - (CGFloat(views.count - 1) * style._spacing)
+                        let size = (proxy.size.width / CGFloat(views.count)) - style._spacing//(CGFloat(views.count - 1) * style._spacing)
                         
                         Spacer()
                         ForEach(0..<views.count, id: \.self){ item in
@@ -102,6 +109,7 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
                         }
                         Spacer()
                     }
+                
                 }
             }
             .frame(maxHeight: style._size + 5)

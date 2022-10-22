@@ -14,12 +14,14 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
     private let currentIndex: Binding<Int>?
     private let currentPage: Binding<Int>?
     internal let pointsPage: Binding<Int>
+    private let forceMoveToNextPoint: Bool
     
-    internal init(_ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>) {
+    internal init(_ forceMoveToNextPoint: Bool, _ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>) {
         self.views = views
         self.currentIndex = currentIndex
         self.currentPage = currentPage
         self.pointsPage = pointsPage
+        self.forceMoveToNextPoint = forceMoveToNextPoint
     }
     
     internal func makeUIViewController(context: Context) -> UIPageViewController {
@@ -36,7 +38,7 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
     }
     
     internal func makeCoordinator() -> PagesViewerCoordinator<T> {
-        PagesViewerCoordinator(views, currentIndex, currentPage, pointsPage)
+        PagesViewerCoordinator(forceMoveToNextPoint, views, currentIndex, currentPage, pointsPage)
     }
     
     internal func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {

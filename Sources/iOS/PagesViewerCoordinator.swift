@@ -18,13 +18,15 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
     private let currentPage: Binding<Int>?
     internal let pointsPage: Binding<Int>
     internal var lastIndex: Int
+    private let forceMoveToNextPoint: Bool
     
-    internal init(_ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>) {
+    internal init(_ forceMoveToNextPoint: Bool, _ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>) {
         var temp: [Hosting<T>] = []
         for (index, element) in views.enumerated() {
             temp.append(Hosting(index: index, rootView: element))
         }
         self.pointsPage = pointsPage
+        self.forceMoveToNextPoint = forceMoveToNextPoint
         self.controllers = temp
         self.currentIndex = currentIndex
         self.currentPage = currentPage
@@ -66,7 +68,9 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         previousViewControllers: [UIViewController],
         transitionCompleted completed: Bool) {
             
-            if self.currentIndex == nil && currentPage == nil { return }
+
+            
+            //if self.currentIndex == nil && currentPage == nil { return }
             
             guard
                 let hosting = pageViewController.viewControllers?.first as? Hosting<T>
@@ -76,6 +80,24 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
             
             self.currentIndex?.wrappedValue = hosting.index
             self.currentPage?.wrappedValue = hosting.index + 1
+            if hosting.index != self.pointsPage.wrappedValue {
+                self.pointsPage.wrappedValue = hosting.index
+            }
+ 
 
         }
+    
+    internal func pageViewController(
+        _ pageViewController: UIPageViewController,
+        willTransitionTo pendingViewControllers: [UIViewController]
+    ){
+        guard
+            let hosting = pendingViewControllers.first as? Hosting<T>,
+            forceMoveToNextPoint
+        else {
+            return
+        }
+        
+        self.pointsPage.wrappedValue = hosting.index
+    }
 }
