@@ -15,6 +15,7 @@
 		7484208D2904444500297219 /* RenderFromViewsWithPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7484208C2904444500297219 /* RenderFromViewsWithPoint.swift */; };
 		7495E98E29044B7A00295729 /* RenderFromBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7495E98D29044B7A00295729 /* RenderFromBuilder.swift */; };
 		7495E99029044D9300295729 /* RenderWithUsingIndexAndPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7495E98F29044D9300295729 /* RenderWithUsingIndexAndPage.swift */; };
+		74C162222904705D00C7E13F /* RenderWithPointsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74C162212904705D00C7E13F /* RenderWithPointsStyle.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		7484208C2904444500297219 /* RenderFromViewsWithPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderFromViewsWithPoint.swift; sourceTree = "<group>"; };
 		7495E98D29044B7A00295729 /* RenderFromBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderFromBuilder.swift; sourceTree = "<group>"; };
 		7495E98F29044D9300295729 /* RenderWithUsingIndexAndPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderWithUsingIndexAndPage.swift; sourceTree = "<group>"; };
+		74C162212904705D00C7E13F /* RenderWithPointsStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderWithPointsStyle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 				7484208C2904444500297219 /* RenderFromViewsWithPoint.swift */,
 				7495E98D29044B7A00295729 /* RenderFromBuilder.swift */,
 				7495E98F29044D9300295729 /* RenderWithUsingIndexAndPage.swift */,
+				74C162212904705D00C7E13F /* RenderWithPointsStyle.swift */,
 			);
 			path = Examples;
 			sourceTree = "<group>";
@@ -165,6 +168,7 @@
 				7484208D2904444500297219 /* RenderFromViewsWithPoint.swift in Sources */,
 				7484207A29043E3300297219 /* ContentView.swift in Sources */,
 				7484207829043E3300297219 /* ExampleProjectApp.swift in Sources */,
+				74C162222904705D00C7E13F /* RenderWithPointsStyle.swift in Sources */,
 				7495E99029044D9300295729 /* RenderWithUsingIndexAndPage.swift in Sources */,
 				7495E98E29044B7A00295729 /* RenderFromBuilder.swift in Sources */,
 			);

@@ -31,8 +31,11 @@ extension PagesViewerPointStyle {
         self.padding ?? 10
     }
     var _borderSize: CGFloat {
-        if self.borderSize == nil { return 1 }
-        return self._size > self.borderSize! ? self._borderSize : (self._size - 1)
+        guard let bSize = self.borderSize else {
+            return 1
+        }
+        let size = self.size ?? 15
+        return size > bSize ? bSize : (size - 1)
     }
     var _spacing: CGFloat {
         self.spacing ?? 5

@@ -16,6 +16,9 @@ struct ContentView: View {
                 NavigationLink(destination: RenderWithUsingIndexAndPage()) {
                     Text("Render with using index and number page")
                 }
+                NavigationLink(destination: RenderWithPointsStyle()) {
+                    Text("Render with points style")
+                }
             }
 
         }
