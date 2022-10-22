@@ -17,11 +17,10 @@ public protocol PagesViewerPointStyle {
     var borderSize: CGFloat? { get }
     var spacing: CGFloat? { get }
     var opacity: CGFloat? { get }
-    var padding: CGFloat? { get }
+    var padding: CGFloat? { get set }
 }
 
 extension PagesViewerPointStyle {
-    
     var _size: CGFloat {
         self.size ?? 15
     }

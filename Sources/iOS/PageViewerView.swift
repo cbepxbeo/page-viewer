@@ -8,11 +8,12 @@
 //
 import SwiftUI
 
-public protocol PagesViewerCustomPoint: View {
-    var enable: Bool { get set }
+public enum PageViewerPointPosition {
+    case bottom, top
 }
 
-public struct PageViewerView<A: RandomAccessCollection, C: View, T: PagesViewerCustomPoint>: View {
+
+public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
     //----------public
     public init(_ array: A, currentIndex: Binding<Int>, @ViewBuilder content: @escaping (A.Index, A.Element) -> C){
         self.init(array, currentIndex: currentIndex, currentPage: nil, content: content)
@@ -51,8 +52,8 @@ public struct PageViewerView<A: RandomAccessCollection, C: View, T: PagesViewerC
     private var showPoints: Bool = false
     private var style: PagesViewerPointStyle = _PointStyle.default
     private var forceMoveToNextPoint: Bool = true
-    private var customPoint: T? = nil
-    
+    private var pointPosition: PageViewerPointPosition = .bottom
+
     public func pagePoints(_ showPoints: Bool) -> PageViewerView {
         var view = self
         view.showPoints = showPoints
@@ -71,9 +72,15 @@ public struct PageViewerView<A: RandomAccessCollection, C: View, T: PagesViewerC
         return view
     }
     
-    public func customPoint(_ customPoint: T) -> PageViewerView {
+    public func pointPosition(_ position: PageViewerPointPosition) -> PageViewerView {
         var view = self
-        view.customPoint = customPoint
+        view.pointPosition = position
+        return view
+    }
+    
+    public func pointPadding(_ padding: CGFloat) -> PageViewerView {
+        var view = self
+        view.style.padding = padding
         return view
     }
     
@@ -93,17 +100,23 @@ public struct PageViewerView<A: RandomAccessCollection, C: View, T: PagesViewerC
         .frame(width: size, height: size)
     }
     
-    private func getCustomPoint(_ enable: Bool) -> some View {
-        var view = self.customPoint
-        view?.enable = enable
-        return view
-    }
-    
     public var body: some View {
-        PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
-        self._viewPoints
-            .opacity(style._opacity)
-            .padding(.top, style._padding)
+        switch pointPosition {
+        case .bottom:
+            VStack{
+                PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
+                self._viewPoints
+                    .opacity(style._opacity)
+                    .padding(.top, style._padding)
+            }
+        case .top:
+            VStack{
+                self._viewPoints
+                    .opacity(style._opacity)
+                    .padding(.bottom, style._padding)
+                PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
+            }
+        }
     }
     
     @ViewBuilder var _viewPoints: some View {
@@ -112,12 +125,8 @@ public struct PageViewerView<A: RandomAccessCollection, C: View, T: PagesViewerC
                 GeometryReader{ proxy in
                     HStack(spacing: style._spacing){
                         let size = (proxy.size.width / CGFloat(views.count)) - style._spacing
-                        
                         Spacer()
-                        
-                        
                         ForEach(0..<views.count, id: \.self){ item in
-                            if customPoint == nil {
                                 self.getPoint(
                                     border: indexToPoint == item ? style._borderActiveColor : style._borderInactiveColor,
                                     fill: indexToPoint == item ? style._bodyActiveColor : style._bodyInactiveColor,
@@ -125,13 +134,9 @@ public struct PageViewerView<A: RandomAccessCollection, C: View, T: PagesViewerC
                                     borderSize: style._borderSize > size ? (size - 1) : style._borderSize
                                 )
                                 .animation(.spring(), value: indexToPoint)
-                            } else {
-                                self.getCustomPoint(indexToPoint == item)
-                            }
                         }
                         Spacer()
                     }
-                
                 }
             }
             .frame(maxHeight: style._size + 5)
@@ -139,10 +144,6 @@ public struct PageViewerView<A: RandomAccessCollection, C: View, T: PagesViewerC
             EmptyView()
         }
     }
-    
-    
-    
-    
 }
 
 public extension PageViewerView where A == [Any] {
@@ -177,11 +178,3 @@ fileprivate struct _PointStyle: PagesViewerPointStyle {
     
     static let `default`: _PointStyle = .init()
 }
-
-struct _CustomPoint: PagesViewerCustomPoint {
-    var enable: Bool
-    var body: some View {
-        EmptyView()
-    }
-}
-
