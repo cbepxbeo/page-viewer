@@ -6,7 +6,6 @@
 //
 // Status: #In progress | #Not decorated
 //
-
 import SwiftUI
 
 
@@ -38,20 +37,64 @@ struct PageViewerComponent<A: RandomAccessCollection, C: View>: View {
         }
         self.currentIndex = currentIndex
         self.currentPage = currentPage
+        if currentIndex == nil && currentPage == nil {
+            self._indexToPoint = State(initialValue: 0)
+        } else {
+            self._indexToPoint = nil
+        }
     }
     private init(_ array: A, currentIndex: Binding<Int>? = nil, currentPage: Binding<Int>? = nil, @ViewBuilder content: @escaping (A.Element) -> C){
         self.views = Array(array).map { content($0) }
         self.currentIndex = currentIndex
         self.currentPage = currentPage
+        if currentIndex == nil && currentPage == nil {
+            self._indexToPoint = State(initialValue: 0)
+        } else {
+            self._indexToPoint = nil
+        }
     }
     
+    private let _indexToPoint: State<Int>?
     private let currentIndex: Binding<Int>?
     private let currentPage: Binding<Int>?
     private let views: [C]
     
-    var body: some View {
-        PagesViewer(views, currentIndex, currentPage)
+    var indexToPoint: Int {
+        if currentIndex != nil {
+            return currentIndex!.wrappedValue
+        } else if currentPage != nil {
+            return currentPage!.wrappedValue - 1
+        } else {
+            return _indexToPoint?.wrappedValue ?? 0
+        }
     }
+    
+    private func getPoint(border: Color, fill: Color) -> some View {
+        ZStack{
+            Circle()
+                .fill(border)
+            Circle()
+                .fill(fill)
+                .padding(1)
+        }
+        .frame(width: 20, height: 20)
+    }
+    
+    var body: some View {
+        PageViewerWrapper(views, currentIndex, currentPage)
+        HStack{
+            ForEach(0..<views.count){ item in
+                self.getPoint(border: .black, fill: currentIndex?.wrappedValue == item ? .gray : .white)
+            }
+        }
+    }
+    
+    @ViewBuilder var viewer: some View {
+        if currentIndex == nil && currentPage == nil {
+            PageViewerWrapper(views, self.$_indexToPoint, nil)
+        }
+    }
+    
 }
 
 extension PageViewerComponent where A == [Any] {
@@ -59,21 +102,22 @@ extension PageViewerComponent where A == [Any] {
         self.views = views
         self.currentIndex = currentIndex
         self.currentPage = nil
+        self._indexToPoint = nil
     }
     init(views: [C], currentPage: Binding<Int>){
         self.views = views
         self.currentIndex = nil
-        self.currentPage = currentPage
+        self.currentPage = nil
     }
     init(views: [C]){
         self.views = views
         self.currentIndex = nil
         self.currentPage = nil
+        self._indexToPoint = State(initialValue: 0)
     }
 }
 
-
-fileprivate struct PagesViewer<T>: UIViewControllerRepresentable where T : View{
+fileprivate struct PageViewerWrapper<T>: UIViewControllerRepresentable where T : View{
     
     let views: [T]
     let currentIndex: Binding<Int>?
@@ -102,13 +146,11 @@ fileprivate struct PagesViewer<T>: UIViewControllerRepresentable where T : View{
         PagesViewerCoordinator(views, currentIndex, currentPage)
     }
     
-    
     func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
-        
-
         let last: Int,
-            index: Int,
+            count: Int,
             direction: UIPageViewController.NavigationDirection
+        var index: Int
         
         if let currentIndex = self.currentIndex?.wrappedValue {
             index = currentIndex
@@ -118,25 +160,26 @@ fileprivate struct PagesViewer<T>: UIViewControllerRepresentable where T : View{
             return
         }
         
+        count = context.coordinator.controllers.count
         last = context.coordinator.lastIndex
         
+        
+        if index >= count && last < count  {
+            print("Индекс или Номер страницы вышли за допустимые пределы")
+            self.currentPage?.wrappedValue = 1
+            self.currentIndex?.wrappedValue = 0
+            index = 0
+        }
+        
+        direction = index > last ? .forward : .reverse
         if last == index { return }
         
+        context.coordinator.lastIndex = index
         pageViewController.setViewControllers(
-            [context.coordinator.controllers[index >= context.coordinator.controllers.count ? 0 : index]], direction: .forward, animated: true)
+            [context.coordinator.controllers[index]], direction: direction, animated: true)
     }
-    
-    
-    private func _workWithIndex(_ value: Int, _ pageViewController: UIPageViewController, context: Context) -> (index: Int, direction: UIPageViewController.NavigationDirection){
-        (value, value > context.coordinator.lastIndex ? .forward : .reverse)
-    }
-    
-    private func _workWithPage(_ value: Int, _ pageViewController: UIPageViewController, context: Context) -> (index: Int, direction: UIPageViewController.NavigationDirection){
-        (value - 1, value - 1 > context.coordinator.lastIndex ? .forward : .reverse)
-    }
-    
-}
 
+}
 
 fileprivate final class CustomUIHostingController<Content>: UIHostingController<Content> where Content: View {
     var index: Int
@@ -163,20 +206,12 @@ fileprivate final class PagesViewerCoordinator<T>: NSObject, UIPageViewControlle
             temp.append(CustomUIHostingController(index: index, rootView: element))
         }
         
-        if currentIndex?.wrappedValue ?? 0 > temp.count - 1 {
-            fatalError("Индекс выходит за границы массива")
-        }
-        if currentPage?.wrappedValue ?? 0 > temp.count {
-            fatalError("Номер странцы превышает фактическое количество")
-        }
-        
         self.controllers = temp
         self.currentIndex = currentIndex
         self.currentPage = currentPage
         self.root = controllers.first
-        self.lastIndex = currentIndex?.wrappedValue ?? currentPage?.wrappedValue ?? 0
+        self.lastIndex = currentIndex?.wrappedValue ?? ((currentPage?.wrappedValue ?? 1) - 1)
     }
-    
     
     func pageViewController(
         _ pageViewController: UIPageViewController,
@@ -212,14 +247,16 @@ fileprivate final class PagesViewerCoordinator<T>: NSObject, UIPageViewControlle
         previousViewControllers: [UIViewController],
         transitionCompleted completed: Bool) {
             
-            if self.currentIndex == nil { return }
+            if self.currentIndex == nil && currentPage == nil { return }
             
             guard
                 let hosting = pageViewController.viewControllers?.first as? CustomUIHostingController<T>
             else {
                 return
             }
+            
             self.currentIndex?.wrappedValue = hosting.index
-                        self.currentPage?.wrappedValue = hosting.index + 1
-                    }
-            }
+            self.currentPage?.wrappedValue = hosting.index + 1
+
+        }
+}
