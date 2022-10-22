@@ -12,7 +12,6 @@ public enum PageViewerPointPosition {
     case bottom, top
 }
 
-
 public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
     //----------public
     public init(_ array: A, currentIndex: Binding<Int>, @ViewBuilder content: @escaping (A.Index, A.Element) -> C){
@@ -101,22 +100,26 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
     }
     
     public var body: some View {
-        switch pointPosition {
-        case .bottom:
-            VStack{
-                PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
-                self._viewPoints
-                    .opacity(style._opacity)
-                    .padding(.top, style._padding)
+        Group{
+            switch pointPosition {
+            case .bottom:
+                VStack{
+                    PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
+                        .ignoresSafeArea()
+                    self._viewPoints
+                        .opacity(style._opacity)
+                        .padding(.top, style._padding)
+                }
+            case .top:
+                VStack{
+                    self._viewPoints
+                        .opacity(style._opacity)
+                        .padding(.bottom, style._padding)
+                    PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
+                        .ignoresSafeArea()
+                }
             }
-        case .top:
-            VStack{
-                self._viewPoints
-                    .opacity(style._opacity)
-                    .padding(.bottom, style._padding)
-                PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
-            }
-        }
+        }.ignoresSafeArea()
     }
     
     @ViewBuilder var _viewPoints: some View {
@@ -163,7 +166,6 @@ public extension PageViewerView where A == [Any] {
         self.currentPage = nil
     }
 }
-
 
 fileprivate struct _PointStyle: PagesViewerPointStyle {
     var opacity: CGFloat?

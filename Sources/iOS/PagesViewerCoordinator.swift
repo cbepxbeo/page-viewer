@@ -12,8 +12,8 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
     
     typealias Hosting = PageViewerHostingController
     
-    internal let controllers: [Hosting<T>]
-    internal let root: Hosting<T>?
+    internal let controllers: [Hosting<AnyView>]
+    internal let root: Hosting<AnyView>?
     private let currentIndex: Binding<Int>?
     private let currentPage: Binding<Int>?
     internal let pointsPage: Binding<Int>
@@ -21,9 +21,9 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
     private let forceMoveToNextPoint: Bool
     
     internal init(_ forceMoveToNextPoint: Bool, _ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>) {
-        var temp: [Hosting<T>] = []
+        var temp: [Hosting<AnyView>] = []
         for (index, element) in views.enumerated() {
-            temp.append(Hosting(index: index, rootView: element))
+            temp.append(Hosting(index: index, rootView: AnyView(element.ignoresSafeArea())))
         }
         self.pointsPage = pointsPage
         self.forceMoveToNextPoint = forceMoveToNextPoint
@@ -38,7 +38,7 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController) -> UIViewController? {
             guard
-                let hosting = viewController as? Hosting<T>
+                let hosting = viewController as? Hosting<AnyView>
             else {
                 return nil
             }
