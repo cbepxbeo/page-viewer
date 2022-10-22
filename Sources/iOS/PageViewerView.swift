@@ -155,7 +155,7 @@ public extension PageViewerView where A == [Any] {
     init(views: [C], currentPage: Binding<Int>){
         self.views = views
         self.currentIndex = nil
-        self.currentPage = nil
+        self.currentPage = currentPage
     }
     init(views: [C]){
         self.views = views

@@ -44,6 +44,7 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
             }
             let index = hosting.index == 0 ? controllers.count - 1 : hosting.index - 1
             self.lastIndex = index
+            self.pointsPage.wrappedValue = index + 1
             return controllers[index]
     }
     
@@ -68,23 +69,19 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         previousViewControllers: [UIViewController],
         transitionCompleted completed: Bool) {
             
-
-            
-            //if self.currentIndex == nil && currentPage == nil { return }
-            
             guard
                 let hosting = pageViewController.viewControllers?.first as? Hosting<AnyView>
             else {
                 return
             }
             
-            self.currentIndex?.wrappedValue = hosting.index
-            self.currentPage?.wrappedValue = hosting.index + 1
-            if hosting.index != self.pointsPage.wrappedValue {
-                self.pointsPage.wrappedValue = hosting.index
+            DispatchQueue.main.async {
+                self.currentIndex?.wrappedValue = hosting.index
+                self.currentPage?.wrappedValue = hosting.index + 1
+                if hosting.index != self.pointsPage.wrappedValue {
+                    self.pointsPage.wrappedValue = hosting.index
+                }
             }
- 
-
         }
     
     internal func pageViewController(
@@ -97,7 +94,8 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         else {
             return
         }
-        
-        self.pointsPage.wrappedValue = hosting.index
+        DispatchQueue.main.async {
+            self.pointsPage.wrappedValue = hosting.index
+        }
     }
 }
