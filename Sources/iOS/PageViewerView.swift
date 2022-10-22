@@ -8,7 +8,11 @@
 //
 import SwiftUI
 
-public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
+public protocol PagesViewerCustomPoint: View {
+    var enable: Bool { get set }
+}
+
+public struct PageViewerView<A: RandomAccessCollection, C: View, T: PagesViewerCustomPoint>: View {
     //----------public
     public init(_ array: A, currentIndex: Binding<Int>, @ViewBuilder content: @escaping (A.Index, A.Element) -> C){
         self.init(array, currentIndex: currentIndex, currentPage: nil, content: content)
@@ -47,6 +51,7 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
     private var showPoints: Bool = false
     private var style: PagesViewerPointStyle = _PointStyle.default
     private var forceMoveToNextPoint: Bool = true
+    private var customPoint: T? = nil
     
     public func pagePoints(_ showPoints: Bool) -> PageViewerView {
         var view = self
@@ -66,6 +71,11 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
         return view
     }
     
+    public func customPoint(_ customPoint: T) -> PageViewerView {
+        var view = self
+        view.customPoint = customPoint
+        return view
+    }
     
     private let currentIndex: Binding<Int>?
     private let currentPage: Binding<Int>?
@@ -83,6 +93,12 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
         .frame(width: size, height: size)
     }
     
+    private func getCustomPoint(_ enable: Bool) -> some View {
+        var view = self.customPoint
+        view?.enable = enable
+        return view
+    }
+    
     public var body: some View {
         PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
         self._viewPoints
@@ -95,17 +111,23 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
             Group{
                 GeometryReader{ proxy in
                     HStack(spacing: style._spacing){
-                        let size = (proxy.size.width / CGFloat(views.count)) - style._spacing//(CGFloat(views.count - 1) * style._spacing)
+                        let size = (proxy.size.width / CGFloat(views.count)) - style._spacing
                         
                         Spacer()
+                        
+                        
                         ForEach(0..<views.count, id: \.self){ item in
-                            self.getPoint(
-                                border: indexToPoint == item ? style._borderActiveColor : style._borderInactiveColor,
-                                fill: indexToPoint == item ? style._bodyActiveColor : style._bodyInactiveColor,
-                                size: style._size > size ? size : style._size,
-                                borderSize: style._borderSize > size ? (size - 1) : style._borderSize
-                            )
-                            .animation(.spring(), value: indexToPoint)
+                            if customPoint == nil {
+                                self.getPoint(
+                                    border: indexToPoint == item ? style._borderActiveColor : style._borderInactiveColor,
+                                    fill: indexToPoint == item ? style._bodyActiveColor : style._bodyInactiveColor,
+                                    size: style._size > size ? size : style._size,
+                                    borderSize: style._borderSize > size ? (size - 1) : style._borderSize
+                                )
+                                .animation(.spring(), value: indexToPoint)
+                            } else {
+                                self.getCustomPoint(indexToPoint == item)
+                            }
                         }
                         Spacer()
                     }
@@ -156,4 +178,10 @@ fileprivate struct _PointStyle: PagesViewerPointStyle {
     static let `default`: _PointStyle = .init()
 }
 
+struct _CustomPoint: PagesViewerCustomPoint {
+    var enable: Bool
+    var body: some View {
+        EmptyView()
+    }
+}
 
