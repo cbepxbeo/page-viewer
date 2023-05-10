@@ -50,6 +50,7 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
     private var style: PagesViewerPointStyle = _PointStyle.default
     private var forceMoveToNextPoint: Bool = true
     private var pointPosition: PageViewerPointPosition = .bottom
+    private var isCarousel: Bool = true
     
     //-----from init
     private let currentIndex: Binding<Int>?
@@ -61,6 +62,13 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
     public func pagePoints(_ showPoints: Bool) -> PageViewerView {
         var view = self
         view.showPoints = showPoints
+        return view
+    }
+    
+    
+    public func setCarouselMode(_ isCarousel: Bool) -> PageViewerView {
+        var view = self
+        view.isCarousel = isCarousel
         return view
     }
     
@@ -93,7 +101,7 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
         switch pointPosition {
         case .bottom:
             VStack{
-                PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
+                PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint, isCarousel)
                 self._viewPoints
                     .opacity(style._opacity)
                     .padding(.top, style._padding)
@@ -103,7 +111,7 @@ public struct PageViewerView<A: RandomAccessCollection, C: View>: View {
                 self._viewPoints
                     .opacity(style._opacity)
                     .padding(.bottom, style._padding)
-                PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint)
+                PageViewerUIWrapper(forceMoveToNextPoint, views, currentIndex, currentPage, $indexToPoint, isCarousel)
             }
         }
     }

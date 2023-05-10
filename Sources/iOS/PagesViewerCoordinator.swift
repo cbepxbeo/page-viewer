@@ -12,7 +12,7 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
     
     typealias Hosting = PageViewerHostingController
     
-    internal init(_ forceMoveToNextPoint: Bool, _ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>) {
+    internal init(_ forceMoveToNextPoint: Bool, _ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>, _ isCarousel: Bool) {
         var temp: [Hosting<AnyView>] = []
         for (index, element) in views.enumerated() {
             temp.append(Hosting(index: index, rootView: AnyView(element.ignoresSafeArea())))
@@ -22,14 +22,16 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         self.controllers = temp
         self.currentIndex = currentIndex
         self.currentPage = currentPage
-        self.root = controllers.first
+        self.root = controllers[currentIndex?.wrappedValue ?? 0]
         self.lastIndex = currentIndex?.wrappedValue ?? ((currentPage?.wrappedValue ?? 1) - 1)
+        self.isCarousel = isCarousel
     }
     
     internal let controllers: [Hosting<AnyView>]
     internal let root: Hosting<AnyView>?
     internal let pointsPage: Binding<Int>
     internal var lastIndex: Int
+    private let isCarousel: Bool
     
     private let currentIndex: Binding<Int>?
     private let currentPage: Binding<Int>?
@@ -43,6 +45,11 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
             else {
                 return nil
             }
+            
+            if !isCarousel && hosting.index == 0 {
+                return nil
+            }
+            
             let index = hosting.index == 0 ? controllers.count - 1 : hosting.index - 1
             self.lastIndex = index
             return controllers[index]
@@ -56,6 +63,11 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
             else {
                 return nil
             }
+            
+            if !isCarousel && hosting.index + 1 == controllers.count {
+                return nil
+            }
+            
             let index = hosting.index + 1 == controllers.count ? 0 : hosting.index + 1
             self.lastIndex = index
             return controllers[index]

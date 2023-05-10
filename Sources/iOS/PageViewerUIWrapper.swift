@@ -7,21 +7,26 @@
 // Status: #In progress | #Not decorated
 //
 import SwiftUI
+import OSLog
 
 internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : View{
     
+    private let logger: Logger
     private let views: [T]
     private let currentIndex: Binding<Int>?
     private let currentPage: Binding<Int>?
-    internal let pointsPage: Binding<Int>
+    private let pointsPage: Binding<Int>
     private let forceMoveToNextPoint: Bool
+    private let isInfiniteScrolled: Bool
     
-    internal init(_ forceMoveToNextPoint: Bool, _ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>) {
+    internal init(_ forceMoveToNextPoint: Bool, _ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>, _ isInfiniteScrolled: Bool) {
         self.views = views
         self.currentIndex = currentIndex
         self.currentPage = currentPage
         self.pointsPage = pointsPage
         self.forceMoveToNextPoint = forceMoveToNextPoint
+        self.isInfiniteScrolled = isInfiniteScrolled
+        self.logger = .init(subsystem: "page-viewer", category: "page-viewer-ui-wrapper")
     }
     
     internal func makeUIViewController(context: Context) -> UIPageViewController {
@@ -38,7 +43,7 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
     }
     
     internal func makeCoordinator() -> PagesViewerCoordinator<T> {
-        PagesViewerCoordinator(forceMoveToNextPoint, views, currentIndex, currentPage, pointsPage)
+        PagesViewerCoordinator(forceMoveToNextPoint, views, currentIndex, currentPage, pointsPage, isInfiniteScrolled)
     }
     
     internal func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
@@ -50,7 +55,6 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
         count = context.coordinator.controllers.count
         last = context.coordinator.lastIndex
         
-        
         if let currentIndex = self.currentIndex?.wrappedValue {
             index = currentIndex
         } else if let currentPage = self.currentPage?.wrappedValue {
@@ -60,7 +64,7 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
         }
         
         if index >= count && last < count  {
-            print("Индекс или Номер страницы вышли за допустимые пределы")
+            logger.warning("index or page number out of range")
             DispatchQueue.main.async {
                 self.currentPage?.wrappedValue = 1
                 self.currentIndex?.wrappedValue = 0
