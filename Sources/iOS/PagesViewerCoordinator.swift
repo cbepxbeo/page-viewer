@@ -93,10 +93,11 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
             }
             
             
-            DispatchQueue.main.async {
-                self.currentIndex?.wrappedValue = previousHosting.index
-                self.currentPage?.wrappedValue = previousHosting.index + 1
-                self.pointsPage.wrappedValue = previousHosting.index
+            DispatchQueue.main.async { [weak self] in
+                self?.lastIndex = previousHosting.index
+                self?.currentIndex?.wrappedValue = previousHosting.index
+                self?.currentPage?.wrappedValue = previousHosting.index + 1
+                self?.pointsPage.wrappedValue = previousHosting.index
             }
         }
     

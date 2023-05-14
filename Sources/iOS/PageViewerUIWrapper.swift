@@ -48,58 +48,56 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
     
     internal func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
         
-   
-        if context.coordinator.controllers.count > 0 {
-            return
-        }
+        let lastIndex: Int,
+            controllerCount: Int,
+            navigationDirection: UIPageViewController.NavigationDirection
+        
+        var currentIndex: Int
         
         
-        let last: Int,
-            count: Int,
-            direction: UIPageViewController.NavigationDirection
-        var index: Int
-        
-        count = context.coordinator.controllers.count
-        last = context.coordinator.lastIndex
-        
-        if let currentIndex = self.currentIndex?.wrappedValue {
-            index = currentIndex
-        } else if let currentPage = self.currentPage?.wrappedValue {
-            index = currentPage - 1
+        if let index = self.currentIndex?.wrappedValue {
+            currentIndex = index
+        } else if let page = self.currentPage?.wrappedValue {
+            currentIndex = page - 1
         } else {
             return
         }
         
-        if index >= count && last < count  {
+        
+        controllerCount = context.coordinator.controllers.count
+        lastIndex = context.coordinator.lastIndex
+        
+        
+        if currentIndex >= controllerCount && lastIndex < controllerCount  {
             logger.warning("index or page number out of range")
             DispatchQueue.main.async {
                 self.currentPage?.wrappedValue = 1
                 self.currentIndex?.wrappedValue = 0
             }
-            index = 0
+            currentIndex = 0
         }
         
-        DispatchQueue.main.async {
-            if context.coordinator.currentIndex?.wrappedValue != index{
-                context.coordinator.currentIndex?.wrappedValue = index
+        if context.coordinator.currentIndex?.wrappedValue != currentIndex {
+            DispatchQueue.main.async {
+                context.coordinator.currentIndex?.wrappedValue = currentIndex
             }
         }
         
-        direction = index > last ? .forward : .reverse
-        if last == index { return }
+        if context.coordinator.pointsPage.wrappedValue != currentIndex {
+            DispatchQueue.main.async {
+                context.coordinator.pointsPage.wrappedValue = currentIndex
+            }
+        }
+        
+        if lastIndex == currentIndex { return }
+        
+        navigationDirection = currentIndex > lastIndex ? .forward : .reverse
         
         DispatchQueue.main.async {
-            context.coordinator.lastIndex = index
+            context.coordinator.lastIndex = currentIndex
             pageViewController.setViewControllers(
-                [context.coordinator.controllers[index]], direction: direction, animated: true)
+                [context.coordinator.controllers[currentIndex]], direction: navigationDirection, animated: true)
             
-            if context.coordinator.pointsPage.wrappedValue != index{
-                context.coordinator.pointsPage.wrappedValue = index
-            }
-            
-//            if context.coordinator.currentIndex?.wrappedValue != index{
-//                context.coordinator.currentIndex?.wrappedValue = index
-//            }
         }
 
     }
