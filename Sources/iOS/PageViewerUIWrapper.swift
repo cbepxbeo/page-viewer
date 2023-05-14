@@ -47,6 +47,13 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
     }
     
     internal func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
+        
+   
+        if context.coordinator.controllers.count > 0 {
+            return
+        }
+        
+        
         let last: Int,
             count: Int,
             direction: UIPageViewController.NavigationDirection
@@ -72,6 +79,12 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
             index = 0
         }
         
+        DispatchQueue.main.async {
+            if context.coordinator.currentIndex?.wrappedValue != index{
+                context.coordinator.currentIndex?.wrappedValue = index
+            }
+        }
+        
         direction = index > last ? .forward : .reverse
         if last == index { return }
         
@@ -83,6 +96,10 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
             if context.coordinator.pointsPage.wrappedValue != index{
                 context.coordinator.pointsPage.wrappedValue = index
             }
+            
+//            if context.coordinator.currentIndex?.wrappedValue != index{
+//                context.coordinator.currentIndex?.wrappedValue = index
+//            }
         }
 
     }

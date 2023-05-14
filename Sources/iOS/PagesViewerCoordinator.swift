@@ -33,9 +33,14 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
     internal var lastIndex: Int
     private let isCarousel: Bool
     
-    private let currentIndex: Binding<Int>?
+    
+    
+    var iteration: Int = 0
+    internal let currentIndex: Binding<Int>?
     private let currentPage: Binding<Int>?
     private let forceMoveToNextPoint: Bool
+    
+    internal var forcePointLastIndex: Int = 0
     
     internal func pageViewController(
         _ pageViewController: UIPageViewController,
@@ -78,33 +83,44 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         didFinishAnimating finished: Bool,
         previousViewControllers: [UIViewController],
         transitionCompleted completed: Bool) {
+            
+        
             guard
-                let hosting = pageViewController.viewControllers?.first as? Hosting<AnyView>
+                !completed,
+                let previousHosting = previousViewControllers.first as? Hosting<AnyView> // то что было на старте
             else {
                 return
             }
             
+            
             DispatchQueue.main.async {
-                self.currentIndex?.wrappedValue = hosting.index
-                self.currentPage?.wrappedValue = hosting.index + 1
-                if hosting.index != self.pointsPage.wrappedValue {
-                    self.pointsPage.wrappedValue = hosting.index
-                }
+                self.currentIndex?.wrappedValue = previousHosting.index
+                self.currentPage?.wrappedValue = previousHosting.index + 1
+                self.pointsPage.wrappedValue = previousHosting.index
             }
         }
+    
+    
     
     internal func pageViewController(
         _ pageViewController: UIPageViewController,
         willTransitionTo pendingViewControllers: [UIViewController]){
+            iteration += 1
             guard
-                let hosting = pendingViewControllers.first as? Hosting<AnyView>,
+                let afterHosting = pendingViewControllers.first as? Hosting<AnyView>,
                 forceMoveToNextPoint
             else {
                 return
             }
+
             DispatchQueue.main.async {
-                if hosting.index != self.pointsPage.wrappedValue {
-                    self.pointsPage.wrappedValue = hosting.index
+                if afterHosting.index != self.pointsPage.wrappedValue {
+                    self.pointsPage.wrappedValue = afterHosting.index
+                }
+                
+                if afterHosting.index != self.currentIndex?.wrappedValue {
+                    self.currentIndex?.wrappedValue = afterHosting.index
+                   
                 }
             }
         }
