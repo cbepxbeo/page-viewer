@@ -68,14 +68,21 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
         lastIndex = context.coordinator.lastIndex
         
         
-        if currentIndex >= controllerCount && lastIndex < controllerCount  {
-            logger.warning("index or page number out of range")
-            DispatchQueue.main.async {
-                self.currentPage?.wrappedValue = 1
-                self.currentIndex?.wrappedValue = 0
+        
+        print("КОН: изменения")
+        if context.coordinator.firstUpdate {
+            if currentIndex >= controllerCount && lastIndex < controllerCount  {
+                logger.warning("index or page number out of range")
+                DispatchQueue.main.async {
+                    self.currentPage?.wrappedValue = 1
+                    self.currentIndex?.wrappedValue = 0
+                    context.coordinator.firstUpdate = false
+                }
+                currentIndex = 0
             }
-            currentIndex = 0
         }
+        
+
         
         if context.coordinator.currentIndex?.wrappedValue != currentIndex {
             DispatchQueue.main.async {

@@ -25,6 +25,7 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         self.root = controllers[currentIndex?.wrappedValue ?? 0]
         self.lastIndex = currentIndex?.wrappedValue ?? ((currentPage?.wrappedValue ?? 1) - 1)
         self.isCarousel = isCarousel
+        self.firstUpdate = true
     }
     
     internal let controllers: [Hosting<AnyView>]
@@ -32,15 +33,12 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
     internal let pointsPage: Binding<Int>
     internal var lastIndex: Int
     private let isCarousel: Bool
+    internal var firstUpdate: Bool
     
-    
-    
-    var iteration: Int = 0
+
     internal let currentIndex: Binding<Int>?
     private let currentPage: Binding<Int>?
     private let forceMoveToNextPoint: Bool
-    
-    internal var forcePointLastIndex: Int = 0
     
     internal func pageViewController(
         _ pageViewController: UIPageViewController,
@@ -106,13 +104,13 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
     internal func pageViewController(
         _ pageViewController: UIPageViewController,
         willTransitionTo pendingViewControllers: [UIViewController]){
-            iteration += 1
             guard
-                let afterHosting = pendingViewControllers.first as? Hosting<AnyView>,
-                forceMoveToNextPoint
+                let afterHosting = pendingViewControllers.first as? Hosting<AnyView>
+                
             else {
                 return
             }
+            
 
             DispatchQueue.main.async {
                 if afterHosting.index != self.pointsPage.wrappedValue {
