@@ -68,8 +68,6 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
         lastIndex = context.coordinator.lastIndex
         
         
-        
-        print("КОН: изменения")
         if context.coordinator.firstUpdate {
             if currentIndex >= controllerCount && lastIndex < controllerCount  {
                 logger.warning("index or page number out of range")
@@ -95,13 +93,16 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
                 context.coordinator.pointsPage.wrappedValue = currentIndex
             }
         }
+        DispatchQueue.main.async {
+            context.coordinator.lastIndex = currentIndex
+        }
         
         if lastIndex == currentIndex { return }
         
         navigationDirection = currentIndex > lastIndex ? .forward : .reverse
         
         DispatchQueue.main.async {
-            context.coordinator.lastIndex = currentIndex
+            
             pageViewController.setViewControllers(
                 [context.coordinator.controllers[currentIndex]], direction: navigationDirection, animated: true)
             

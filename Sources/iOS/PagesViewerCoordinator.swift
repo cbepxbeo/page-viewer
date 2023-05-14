@@ -82,20 +82,32 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         previousViewControllers: [UIViewController],
         transitionCompleted completed: Bool) {
             
-        
             guard
-                !completed,
-                let previousHosting = previousViewControllers.first as? Hosting<AnyView> // то что было на старте
+                let hosting = pageViewController.viewControllers?.first as? Hosting<AnyView>,
+                let previousHosting = previousViewControllers.first as? Hosting<AnyView>
             else {
                 return
             }
             
-            
-            DispatchQueue.main.async { [weak self] in
-                self?.lastIndex = previousHosting.index
-                self?.currentIndex?.wrappedValue = previousHosting.index
-                self?.currentPage?.wrappedValue = previousHosting.index + 1
-                self?.pointsPage.wrappedValue = previousHosting.index
+            if completed {
+                DispatchQueue.main.async { [weak self] in
+                    if self?.currentIndex?.wrappedValue != hosting.index {
+                        self?.currentIndex?.wrappedValue = hosting.index
+                    }
+                    if self?.currentPage?.wrappedValue != hosting.index + 1 {
+                        self?.currentPage?.wrappedValue = hosting.index + 1
+                    }
+                    if hosting.index != self?.pointsPage.wrappedValue {
+                        self?.pointsPage.wrappedValue = hosting.index
+                    }
+                }
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.lastIndex = previousHosting.index
+                    self?.currentIndex?.wrappedValue = previousHosting.index
+                    self?.currentPage?.wrappedValue = previousHosting.index + 1
+                    self?.pointsPage.wrappedValue = previousHosting.index
+                }
             }
         }
     
