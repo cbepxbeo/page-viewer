@@ -7,21 +7,26 @@
 // Status: #In progress | #Not decorated
 //
 import SwiftUI
+import OSLog
 
 internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : View{
     
+    private let logger: Logger
     private let views: [T]
     private let currentIndex: Binding<Int>?
     private let currentPage: Binding<Int>?
-    internal let pointsPage: Binding<Int>
+    private let pointsPage: Binding<Int>
     private let forceMoveToNextPoint: Bool
+    private let isInfiniteScrolled: Bool
     
-    internal init(_ forceMoveToNextPoint: Bool, _ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>) {
+    internal init(_ forceMoveToNextPoint: Bool, _ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>, _ isInfiniteScrolled: Bool) {
         self.views = views
         self.currentIndex = currentIndex
         self.currentPage = currentPage
         self.pointsPage = pointsPage
         self.forceMoveToNextPoint = forceMoveToNextPoint
+        self.isInfiniteScrolled = isInfiniteScrolled
+        self.logger = .init(subsystem: "page-viewer", category: "page-viewer-ui-wrapper")
     }
     
     internal func makeUIViewController(context: Context) -> UIPageViewController {
@@ -38,47 +43,69 @@ internal struct PageViewerUIWrapper<T>: UIViewControllerRepresentable where T : 
     }
     
     internal func makeCoordinator() -> PagesViewerCoordinator<T> {
-        PagesViewerCoordinator(forceMoveToNextPoint, views, currentIndex, currentPage, pointsPage)
+        PagesViewerCoordinator(forceMoveToNextPoint, views, currentIndex, currentPage, pointsPage, isInfiniteScrolled)
     }
     
     internal func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
-        let last: Int,
-            count: Int,
-            direction: UIPageViewController.NavigationDirection
-        var index: Int
         
-        count = context.coordinator.controllers.count
-        last = context.coordinator.lastIndex
+        let lastIndex: Int,
+            controllerCount: Int,
+            navigationDirection: UIPageViewController.NavigationDirection
+        
+        var currentIndex: Int
         
         
-        if let currentIndex = self.currentIndex?.wrappedValue {
-            index = currentIndex
-        } else if let currentPage = self.currentPage?.wrappedValue {
-            index = currentPage - 1
+        if let index = self.currentIndex?.wrappedValue {
+            currentIndex = index
+        } else if let page = self.currentPage?.wrappedValue {
+            currentIndex = page - 1
         } else {
             return
         }
         
-        if index >= count && last < count  {
-            print("Индекс или Номер страницы вышли за допустимые пределы")
-            DispatchQueue.main.async {
-                self.currentPage?.wrappedValue = 1
-                self.currentIndex?.wrappedValue = 0
+        
+        controllerCount = context.coordinator.controllers.count
+        lastIndex = context.coordinator.lastIndex
+        
+        
+        if context.coordinator.firstUpdate {
+            if currentIndex >= controllerCount && lastIndex < controllerCount  {
+                logger.warning("index or page number out of range")
+                DispatchQueue.main.async {
+                    self.currentPage?.wrappedValue = 1
+                    self.currentIndex?.wrappedValue = 0
+                    context.coordinator.firstUpdate = false
+                }
+                currentIndex = 0
             }
-            index = 0
         }
         
-        direction = index > last ? .forward : .reverse
-        if last == index { return }
+
+        
+        if context.coordinator.currentIndex?.wrappedValue != currentIndex {
+            DispatchQueue.main.async {
+                context.coordinator.currentIndex?.wrappedValue = currentIndex
+            }
+        }
+        
+        if context.coordinator.pointsPage.wrappedValue != currentIndex {
+            DispatchQueue.main.async {
+                context.coordinator.pointsPage.wrappedValue = currentIndex
+            }
+        }
+        DispatchQueue.main.async {
+            context.coordinator.lastIndex = currentIndex
+        }
+        
+        if lastIndex == currentIndex { return }
+        
+        navigationDirection = currentIndex > lastIndex ? .forward : .reverse
         
         DispatchQueue.main.async {
-            context.coordinator.lastIndex = index
-            pageViewController.setViewControllers(
-                [context.coordinator.controllers[index]], direction: direction, animated: true)
             
-            if context.coordinator.pointsPage.wrappedValue != index{
-                context.coordinator.pointsPage.wrappedValue = index
-            }
+            pageViewController.setViewControllers(
+                [context.coordinator.controllers[currentIndex]], direction: navigationDirection, animated: true)
+            
         }
 
     }

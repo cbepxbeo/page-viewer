@@ -12,7 +12,7 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
     
     typealias Hosting = PageViewerHostingController
     
-    internal init(_ forceMoveToNextPoint: Bool, _ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>) {
+    internal init(_ forceMoveToNextPoint: Bool, _ views: [T], _ currentIndex: Binding<Int>?, _ currentPage: Binding<Int>?, _ pointsPage: Binding<Int>, _ isCarousel: Bool) {
         var temp: [Hosting<AnyView>] = []
         for (index, element) in views.enumerated() {
             temp.append(Hosting(index: index, rootView: AnyView(element.ignoresSafeArea())))
@@ -22,16 +22,21 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         self.controllers = temp
         self.currentIndex = currentIndex
         self.currentPage = currentPage
-        self.root = controllers.first
+        self.root = controllers[currentIndex?.wrappedValue ?? 0]
         self.lastIndex = currentIndex?.wrappedValue ?? ((currentPage?.wrappedValue ?? 1) - 1)
+        self.isCarousel = isCarousel
+        self.firstUpdate = true
     }
     
     internal let controllers: [Hosting<AnyView>]
     internal let root: Hosting<AnyView>?
     internal let pointsPage: Binding<Int>
     internal var lastIndex: Int
+    private let isCarousel: Bool
+    internal var firstUpdate: Bool
     
-    private let currentIndex: Binding<Int>?
+
+    internal let currentIndex: Binding<Int>?
     private let currentPage: Binding<Int>?
     private let forceMoveToNextPoint: Bool
     
@@ -43,6 +48,11 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
             else {
                 return nil
             }
+            
+            if !isCarousel && hosting.index == 0 {
+                return nil
+            }
+            
             let index = hosting.index == 0 ? controllers.count - 1 : hosting.index - 1
             self.lastIndex = index
             return controllers[index]
@@ -56,6 +66,11 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
             else {
                 return nil
             }
+            
+            if !isCarousel && hosting.index + 1 == controllers.count {
+                return nil
+            }
+            
             let index = hosting.index + 1 == controllers.count ? 0 : hosting.index + 1
             self.lastIndex = index
             return controllers[index]
@@ -66,33 +81,57 @@ final internal class PagesViewerCoordinator<T>: NSObject, UIPageViewControllerDa
         didFinishAnimating finished: Bool,
         previousViewControllers: [UIViewController],
         transitionCompleted completed: Bool) {
+            
             guard
-                let hosting = pageViewController.viewControllers?.first as? Hosting<AnyView>
+                let hosting = pageViewController.viewControllers?.first as? Hosting<AnyView>,
+                let previousHosting = previousViewControllers.first as? Hosting<AnyView>
             else {
                 return
             }
             
-            DispatchQueue.main.async {
-                self.currentIndex?.wrappedValue = hosting.index
-                self.currentPage?.wrappedValue = hosting.index + 1
-                if hosting.index != self.pointsPage.wrappedValue {
-                    self.pointsPage.wrappedValue = hosting.index
+            if completed {
+                DispatchQueue.main.async { [weak self] in
+                    if self?.currentIndex?.wrappedValue != hosting.index {
+                        self?.currentIndex?.wrappedValue = hosting.index
+                    }
+                    if self?.currentPage?.wrappedValue != hosting.index + 1 {
+                        self?.currentPage?.wrappedValue = hosting.index + 1
+                    }
+                    if hosting.index != self?.pointsPage.wrappedValue {
+                        self?.pointsPage.wrappedValue = hosting.index
+                    }
+                }
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.lastIndex = previousHosting.index
+                    self?.currentIndex?.wrappedValue = previousHosting.index
+                    self?.currentPage?.wrappedValue = previousHosting.index + 1
+                    self?.pointsPage.wrappedValue = previousHosting.index
                 }
             }
         }
+    
+    
     
     internal func pageViewController(
         _ pageViewController: UIPageViewController,
         willTransitionTo pendingViewControllers: [UIViewController]){
             guard
-                let hosting = pendingViewControllers.first as? Hosting<AnyView>,
-                forceMoveToNextPoint
+                let afterHosting = pendingViewControllers.first as? Hosting<AnyView>
+                
             else {
                 return
             }
+            
+
             DispatchQueue.main.async {
-                if hosting.index != self.pointsPage.wrappedValue {
-                    self.pointsPage.wrappedValue = hosting.index
+                if afterHosting.index != self.pointsPage.wrappedValue {
+                    self.pointsPage.wrappedValue = afterHosting.index
+                }
+                
+                if afterHosting.index != self.currentIndex?.wrappedValue {
+                    self.currentIndex?.wrappedValue = afterHosting.index
+                   
                 }
             }
         }
