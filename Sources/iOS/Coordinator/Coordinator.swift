@@ -15,11 +15,13 @@ final class Coordinator<Content: View>: PageViewCoordinator {
     weak var externalDelegate: PageViewDelegate?
     let dataSource: DataSource<Content>
     let delegate: Delegate<Content>
+    var scrollView: UIScrollView?
     let index: Binding<Int>?
+    var indexQuene: [Int]
+    var locked: Bool
+    var animated: Bool
     
-    func goTo(_ option: CoordinatorOption) {
-        //
-    }
+
     
     init(
         views: [Content],
@@ -31,7 +33,13 @@ final class Coordinator<Content: View>: PageViewCoordinator {
             self.delegate = .init()
             self.index = index
             externalDelegate?.total = dataSource.total
+            self.indexQuene = []
+            self.locked = false
+            self.animated = false
             self.dataSource.coordinator = self
             self.delegate.coordinator = self
         }
+    
+
+
 }
