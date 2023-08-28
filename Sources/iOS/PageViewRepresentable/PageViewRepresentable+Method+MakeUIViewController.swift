@@ -18,6 +18,11 @@ extension PageViewRepresentable {
             navigationOrientation: .horizontal)
         pageViewController.dataSource = context.coordinator.dataSource
         pageViewController.delegate = context.coordinator.delegate
+        pageViewController.view.subviews.forEach {
+            if let scrollView = $0 as? UIScrollView {
+                context.coordinator.scrollView = scrollView
+            }
+        }
         if let root = context.coordinator.dataSource.root {
             pageViewController.setViewControllers(
                 [root], direction: .forward, animated: true)
