@@ -16,15 +16,16 @@ extension Delegate {
     func willTransition(
         _ pageViewController: UIPageViewController,
         _ pendingViewControllers: [UIViewController]){
+            self.coordinator?.animated = true
             guard
                 let afterHosting = pendingViewControllers.first as? Hosting<Content>
             else {
                 return
             }
-            DispatchQueue.main.async { [weak self] in
-                if afterHosting.index != self?.coordinator?.index?.wrappedValue {
-                    self?.coordinator?.index?.wrappedValue = afterHosting.index
-                }
+            
+            if afterHosting.index != self.coordinator?.index?.wrappedValue {
+                self.coordinator?.index?.wrappedValue = afterHosting.index
             }
+            
         }
 }
