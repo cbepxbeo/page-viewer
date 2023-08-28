@@ -18,7 +18,6 @@ struct PageViewRepresentable<Content: View>: UIViewControllerRepresentable{
         looped: Bool,
         delegate: PageViewDelegate? = nil,
         controller: PageViewController? = nil) {
-            self.updatedDataHandler = .init()
             self.views = views
             self.index = index
             self.delegate = delegate
@@ -26,7 +25,6 @@ struct PageViewRepresentable<Content: View>: UIViewControllerRepresentable{
             self.looped = looped
         }
     
-    let updatedDataHandler: UpdatedDataHandler
     let views: [Content]
     let index: Binding<Int>?
     
