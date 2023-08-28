@@ -26,15 +26,35 @@ extension Coordinator {
         }
     }
     
+    /*
+     Method for checking the index for validity.
+     Returns the nearest valid index or optional that will be nil
+     when input index out of range.
+     Used when updating a Bindle and in a programmatic transition method (goTo).
+     */
     @inlinable
-    func checkIndex(total: Int, index input: Int) -> Int {
-        let output: Int
+    func checkIndex(
+        total: Int,
+        index input: Int,
+        methodName: String = #function) -> (output: Int?, nearest: Int) {
+        let output: (Int?, Int)
         if (total - 1) < input {
-            output = total - 1
+            self.warningMessage(
+                methodName,
+                "Index is out of bounds.",
+                "Max index: \(self.dataSource.total - 1)",
+                "Input: \(input)"
+            )
+            output = (nil, total - 1)
         } else if 0 > input {
-            output = 0
+            self.warningMessage(
+                methodName,
+                "Index cannot be negative.",
+                "Input: \(input)"
+            )
+            output = (nil, 0)
         } else {
-            output = input
+            output = (input, input)
         }
         return output
     }

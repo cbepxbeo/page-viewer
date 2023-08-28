@@ -12,29 +12,12 @@
 import SwiftUI
 
 final class Coordinator<Content: View>: PageViewCoordinator, Logging {
-//    init(
-//        views: [Content],
-//        index: Binding<Int>?) {
-//            self.externalDelegate = nil
-//            self.externalController = nil
-//            self.dataSource = .init(
-//                views: views,
-//                lastIndex: index?.wrappedValue ?? 0,
-//                looped: false
-//            )
-//            self.delegate = .init()
-//            self.index = index
-//            externalDelegate?.total = dataSource.total
-//            self.indexQuene = []
-//            self.locked = false
-//            self.animated = false
-//            self.scrollEnabled = true
-//            self.dataSource.coordinator = self
-//            self.delegate.coordinator = self
-//        }
-    
+    init(){
+        self.delegate = .init()
+        self.delegate.coordinator = self
+    }
     var dataSource: DataSource<Content> = .init()
-    var delegate: Delegate<Content> = .init()
+    var delegate: Delegate<Content>
     var scrollEnabled: Bool = true
     var index: Binding<Int>? = nil
     var indexQuene: [Int] = []

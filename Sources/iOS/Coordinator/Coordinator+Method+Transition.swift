@@ -22,7 +22,8 @@ extension Coordinator {
             let checkedIndex = checkIndex(
                 total: coordinator.dataSource.total,
                 index: index
-            )
+            ).nearest
+            
             if lastIndex == checkedIndex {
                 self.unlock()
                 return
@@ -41,6 +42,11 @@ extension Coordinator {
                 self.externalDelegate?.indexAfterAnimation(checkedIndex)
             }
             
+            /*
+             We limit unnecessary clicks and remove the block after a delay.
+             The first method(Updated), which takes an index, buffers all values
+             until the lock is released.
+             */
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){ [weak self] in
                 self?.unlock()
                 if let lastLocked = self?.indexQuene.last {

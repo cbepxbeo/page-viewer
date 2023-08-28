@@ -22,10 +22,10 @@ public struct PageView<Collection: RandomAccessCollection, Content: View>: View 
             self.looped = false
             self.scrollEnabled = true
         }
-    weak var delegate: PageViewDelegate?
-    weak var controller: PageViewController?
-    var looped: Bool
-    var scrollEnabled: Bool
+    weak var delegate: PageViewDelegate? = nil
+    weak var controller: PageViewController? = nil
+    var looped: Bool = false
+    var scrollEnabled: Bool = true
     var views: [Content]
     let index: Binding<Int>?
         

@@ -17,9 +17,14 @@ extension PageView {
         view.delegate = value
         return view
     }
-    public func controller(_ value: PageViewController) -> Self {
+    public func controller(_ value: PageViewController?) -> Self {
         var view = self
         view.controller = value
+        return view
+    }
+    public func scrollEnabled(_ value: Bool) -> Self {
+        var view = self
+        view.scrollEnabled = value
         return view
     }
     public func looped(_ value: Bool) -> Self {
