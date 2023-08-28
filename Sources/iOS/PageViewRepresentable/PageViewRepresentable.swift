@@ -35,7 +35,7 @@ struct PageViewRepresentable<Content: View>: UIViewControllerRepresentable{
     weak var controller: PageViewController?
     
     func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
-        self.updatedDataHandler.updated(
+        context.coordinator.updated(
             pageViewController,
             index: self.index?.wrappedValue,
             coordinator: context.coordinator
