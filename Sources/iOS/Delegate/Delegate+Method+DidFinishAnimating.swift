@@ -26,16 +26,14 @@ extension Delegate {
             }
             
             if completed {
-                DispatchQueue.main.async { [weak self] in
-                    if self?.coordinator?.index?.wrappedValue != hosting.index {
-                        self?.coordinator?.index?.wrappedValue = hosting.index
-                    }
+                if self.coordinator?.index?.wrappedValue != hosting.index {
+                    self.coordinator?.index?.wrappedValue = hosting.index
                 }
+                self.coordinator?.animated = false
+                
             } else {
-                DispatchQueue.main.async { [weak self] in
-                    self?.coordinator?.dataSource.lastIndex = previousHosting.index
-                    self?.coordinator?.index?.wrappedValue = previousHosting.index
-                }
+                self.coordinator?.dataSource.lastIndex = previousHosting.index
+                self.coordinator?.index?.wrappedValue = previousHosting.index
             }
         }
 }
