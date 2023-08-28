@@ -15,10 +15,6 @@ extension Coordinator {
     func goTo(_ option: CoordinatorOption) {
         let methodName = #function
         func worker(){
-            guard let pageViewController else {
-                self.warningMessage(methodName, "PageViewController indefined")
-                return
-            }
             let index: Int?
             switch option {
             case .first:
@@ -49,13 +45,31 @@ extension Coordinator {
                 } else {
                     index = self.dataSource.lastIndex + 1
                 }
+            case .index(let input):
+                if input > self.dataSource.total - 1 {
+                    self.warningMessage(
+                        methodName,
+                        "Index is out of bounds.",
+                        "Max index: \(self.dataSource.total - 1)",
+                        "Input: \(input)"
+                    )
+                    index = nil
+                } else if input < 0 {
+                    self.warningMessage(
+                        methodName,
+                        "Index cannot be negative.",
+                        "Input: \(input)"
+                    )
+                    index = nil
+                } else {
+                    index = input
+                }
             }
             guard let index else {
                 self.debugMessage(methodName, "No action required. Option: \(option)")
-               
                 return
             }
-            self.transition(pageViewController, index: index, coordinator: self)
+            self.index?.wrappedValue = index
         }
         if Thread.isMainThread {
             worker()
