@@ -13,7 +13,6 @@ import SwiftUI
 
 final class Delegate<Content: View>: NSObject, UIPageViewControllerDelegate{
     weak var coordinator: Coordinator<Content>? = nil
-    var indexQuene: [Int] = []
     func pageViewController(
         _ pageViewController: UIPageViewController,
         willTransitionTo pendingViewControllers: [UIViewController]){
