@@ -19,6 +19,12 @@ extension PageView {
             let views = Array(zip(collection.indices, collection)).map { (index, element) in
                 content(index, element)
             }
-            self.init(index: index, looped: false, delegate: nil, controller: nil, views: views)
+            self.init(
+                index: index,
+                looped: false,
+                delegate: nil,
+                controller: nil,
+                views: views
+            )
         }
 }

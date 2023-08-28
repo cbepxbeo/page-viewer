@@ -27,6 +27,7 @@ extension PageViewRepresentable {
             pageViewController.setViewControllers(
                 [root], direction: .forward, animated: true)
         }
+        context.coordinator.pageViewController = pageViewController
         return pageViewController
     }
 }

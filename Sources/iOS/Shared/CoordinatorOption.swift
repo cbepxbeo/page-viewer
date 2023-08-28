@@ -12,4 +12,6 @@
 public enum CoordinatorOption {
     case first
     case last
+    case next
+    case previous
 }
