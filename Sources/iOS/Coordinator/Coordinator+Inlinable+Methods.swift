@@ -21,7 +21,7 @@ extension Coordinator {
     @inlinable
     func unlock(){
         self.locked = false
-        if !self.scrollDisabled {
+        if self.scrollEnabled {
             self.scrollView?.isScrollEnabled = true
         }
     }

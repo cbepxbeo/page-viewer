@@ -21,9 +21,6 @@ extension PageView {
             }
             self.init(
                 index: index,
-                looped: false,
-                delegate: nil,
-                controller: nil,
                 views: views
             )
         }

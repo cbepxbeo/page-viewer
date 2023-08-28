@@ -11,28 +11,16 @@
 
 import SwiftUI
 
-struct PageViewRepresentable<Content: View>: UIViewControllerRepresentable{
-    init(
-        views: [Content],
-        index: Binding<Int>?,
-        looped: Bool,
-        delegate: PageViewDelegate? = nil,
-        controller: PageViewController? = nil) {
-            self.views = views
-            self.index = index
-            self.delegate = delegate
-            self.controller = controller
-            self.looped = looped
-        }
-    
+struct PageViewRepresentable<Content: View>: UIViewControllerRepresentable, Logging{
     let views: [Content]
     let index: Binding<Int>?
-    
-    var looped: Bool
+    let scrollEnabled: Bool
+    let looped: Bool
     weak var delegate: PageViewDelegate?
     weak var controller: PageViewController?
     
     func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
+        self.updateCoordinator(pageViewController, context)
         context.coordinator.updated(
             pageViewController,
             index: self.index?.wrappedValue,

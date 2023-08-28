@@ -36,7 +36,11 @@ extension Coordinator {
                 [coordinator.dataSource.views[checkedIndex]],
                 direction: navigationDirection,
                 animated: true
-            )
+            ){ value in
+                print(value)
+                self.externalDelegate?.indexAfterAnimation(checkedIndex)
+            }
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){ [weak self] in
                 self?.unlock()
                 if let lastLocked = self?.indexQuene.last {

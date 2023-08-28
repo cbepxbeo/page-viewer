@@ -13,14 +13,13 @@ extension PageViewController {
     public func go(to option: CoordinatorOption){
         self.pageViewCoordinator?.coordinator?.goTo(option)
     }
-    
-    public var scrollDisabled: Bool {
+    public var scrollEnabled: Bool {
         get {
             self.pageViewCoordinator?.coordinator?.scrollView?.isScrollEnabled ?? false
         }
         set {
-            self.pageViewCoordinator?.coordinator?.scrollDisabled = !newValue
-            self.pageViewCoordinator?.coordinator?.scrollView?.isScrollEnabled = !newValue
+            self.pageViewCoordinator?.coordinator?.scrollEnabled = newValue
+            self.pageViewCoordinator?.coordinator?.scrollView?.isScrollEnabled = newValue
         }
     }
     

@@ -29,6 +29,7 @@ extension Delegate {
                 if self.coordinator?.index?.wrappedValue != hosting.index {
                     self.coordinator?.index?.wrappedValue = hosting.index
                 }
+                self.coordinator?.externalDelegate?.indexAfterAnimation(hosting.index)
                 self.coordinator?.animated = false
                 
             } else {

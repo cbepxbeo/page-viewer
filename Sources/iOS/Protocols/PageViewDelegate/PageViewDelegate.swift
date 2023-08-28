@@ -12,4 +12,5 @@
 ///Use a protocol if you want to receive calls about events in the PageView
 public protocol PageViewDelegate: AnyObject {
     var total: Int { get set }
+    func indexAfterAnimation(_ index: Int)
 }

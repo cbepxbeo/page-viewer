@@ -14,5 +14,5 @@ import UIKit
 protocol PageViewCoordinator: AnyObject {
     func goTo(_ option: CoordinatorOption)
     var scrollView: UIScrollView? { get }
-    var scrollDisabled: Bool { get set }
+    var scrollEnabled: Bool { get set }
 }

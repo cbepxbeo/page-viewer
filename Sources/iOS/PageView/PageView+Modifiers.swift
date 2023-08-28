@@ -12,7 +12,7 @@
 import SwiftUI
 
 extension PageView {
-    public func delegate(_ value: PageViewDelegate) -> Self {
+    public func delegate(_ value: PageViewDelegate?) -> Self {
         var view = self
         view.delegate = value
         return view

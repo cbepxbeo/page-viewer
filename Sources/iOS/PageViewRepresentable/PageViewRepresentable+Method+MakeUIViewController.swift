@@ -23,10 +23,6 @@ extension PageViewRepresentable {
                 context.coordinator.scrollView = scrollView
             }
         }
-        if let root = context.coordinator.dataSource.root {
-            pageViewController.setViewControllers(
-                [root], direction: .forward, animated: true)
-        }
         context.coordinator.pageViewController = pageViewController
         return pageViewController
     }
