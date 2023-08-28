@@ -17,10 +17,13 @@ extension Coordinator {
         self.locked = true
         self.scrollView?.isScrollEnabled = false
     }
+    
     @inlinable
     func unlock(){
         self.locked = false
-        self.scrollView?.isScrollEnabled = true
+        if !self.scrollDisabled {
+            self.scrollView?.isScrollEnabled = true
+        }
     }
     
     @inlinable

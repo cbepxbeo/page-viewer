@@ -26,7 +26,6 @@ extension Coordinator {
             if lastIndex == checkedIndex {
                 self.unlock()
                 return
-                
             }
             
             let navigationDirection: UIPageViewController.NavigationDirection =
