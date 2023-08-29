@@ -32,4 +32,19 @@ extension PageView {
         view.looped = value
         return view
     }
+    public func indicators<Style: IndicatorStyle, Body: View>(
+        _ style: Style,
+        _ content: (
+            _ content: Self,
+            _ indicators: IndicatorsConfiguration<Style>
+        ) -> Body) -> some View {
+        content(
+            self,
+            IndicatorsConfiguration(
+                range: 0..<self.views.count,
+                index: self.index?.wrappedValue,
+                style: { style }
+            )
+        )
+    }
 }
