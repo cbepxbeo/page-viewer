@@ -25,6 +25,10 @@ extension Delegate {
                 return
             }
             
+            DispatchQueue.global(qos: .userInteractive).async {
+                self.coordinator?.externalDelegate?.didFinishAnimating(completed)
+            }
+            
             if completed {
                 if self.coordinator?.index?.wrappedValue != hosting.index {
                     self.coordinator?.index?.wrappedValue = hosting.index

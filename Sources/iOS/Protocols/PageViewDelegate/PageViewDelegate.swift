@@ -13,4 +13,6 @@
 public protocol PageViewDelegate: AnyObject {
     var total: Int { get set }
     func indexAfterAnimation(_ index: Int)
+    func willTransition(_ pendingIndex: Int)
+    func didFinishAnimating(_ completed: Bool)
 }

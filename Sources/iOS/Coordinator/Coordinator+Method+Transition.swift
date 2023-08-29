@@ -38,7 +38,6 @@ extension Coordinator {
                 direction: navigationDirection,
                 animated: true
             ){ value in
-                print(value)
                 self.externalDelegate?.indexAfterAnimation(checkedIndex)
             }
             

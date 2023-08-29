@@ -22,7 +22,9 @@ extension Delegate {
             else {
                 return
             }
-            
+            DispatchQueue.global(qos: .userInteractive).async {
+                self.coordinator?.externalDelegate?.willTransition(afterHosting.index)
+            }
             if afterHosting.index != self.coordinator?.index?.wrappedValue {
                 self.coordinator?.index?.wrappedValue = afterHosting.index
             }
