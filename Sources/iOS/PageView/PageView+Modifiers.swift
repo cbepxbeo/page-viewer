@@ -44,16 +44,33 @@ extension PageView {
             if let maxView, self.views.count > maxView {
                 self
             } else {
-                style.makeConfiguredPageView(content: { AnyView(self) }){
-                    AnyView(
-                        ForEach(0..<self.views.count, id: \.self){ index in
-                            style.makeIndicator(
-                                selected: index == self.index.wrappedValue,
-                                index: index
+                if let externalIndex {
+                    style.makeConfiguredPageView(content: { AnyView(self) }){
+                        AnyView(
+                            ForEach(0..<self.views.count, id: \.self){ index in
+                                style.makeIndicator(
+                                    selected: index == externalIndex.wrappedValue,
+                                    index: index
+                                )
+                            }
+                        )
+                    }
+                } else {
+                    IndexProvider { localIndex in
+                        var temp = self
+                        let _ = { temp.externalIndex = localIndex }()
+                        style.makeConfiguredPageView(content: { AnyView(temp) }){
+                            AnyView(
+                                ForEach(0..<self.views.count, id: \.self){ index in
+                                    style.makeIndicator(
+                                        selected: index == localIndex.wrappedValue,
+                                        index: index
+                                    )
+                                }
                             )
                         }
-                    )
+                    }
                 }
             }
-    }
+        }
 }
