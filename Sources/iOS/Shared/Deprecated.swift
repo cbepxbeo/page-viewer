@@ -12,7 +12,7 @@
 import SwiftUI
 
 @available(*,deprecated, renamed: "PageView", message: "Will not be available in the next version")
-typealias PageViewerView0 = PageView
+public typealias PageViewerView = PageView
 
 //MARK: PageView
 extension PageView {
@@ -41,6 +41,70 @@ extension PageView {
     @available(*,deprecated, message: "Use modifier indicators. The method lost relevance and did not perform any actions. Will not be available in the next version")
     public func pointPadding(_ padding: CGFloat) -> PageView {
         self
+    }
+    
+    @available(*,deprecated, message: "Will not be available in the next version")
+    public init(
+        _ array: Collection,
+        currentIndex: Binding<Int>,
+        @ViewBuilder content: @escaping (Collection.Index, Collection.Element) -> Content){
+            self.init(array, index: currentIndex, content: content)
+        }
+    
+    @available(*,deprecated, message: "Will not be available in the next version")
+    public init(
+        _ array: Collection,
+        currentIndex: Binding<Int>,
+        @ViewBuilder content: @escaping (Collection.Element) -> Content){
+            self.init(array, index: currentIndex, content: content)
+        }
+    
+    @available(*,deprecated, message: "Will not be available in the next version")
+    public init(
+        _ array: Collection,
+        currentPage: Binding<Int>,
+        @ViewBuilder content: @escaping (Collection.Index, Collection.Element) -> Content){
+            
+            let binding: Binding<Int> =
+                .init(get: {
+                    currentPage.wrappedValue - 1
+                }, set: {
+                    currentPage.wrappedValue = $0 + 1
+                })
+            
+            self.init(array, index: binding, content: content)
+        }
+    
+    @available(*,deprecated, message: "Will not be available in the next version")
+    public init(
+        _ array: Collection,
+        currentPage: Binding<Int>,
+        @ViewBuilder content: @escaping (Collection.Element) -> Content){
+            
+            let binding: Binding<Int> =
+                .init(get: {
+                    currentPage.wrappedValue - 1
+                }, set: {
+                    currentPage.wrappedValue = $0 + 1
+                })
+            
+            self.init(array, index: binding, content: content)
+        }
+}
+
+extension PageView where Collection == [Never] {
+    @available(*,deprecated, message: "Will not be available in the next version")
+    public init(views: [Content], currentPage: Binding<Int>){
+        let binding: Binding<Int> =
+            .init(get: {
+                currentPage.wrappedValue - 1
+            }, set: {
+                currentPage.wrappedValue = $0 + 1
+            })
+        self.init(
+            index: binding,
+            views: views
+        )
     }
 }
 

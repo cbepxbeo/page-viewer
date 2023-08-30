@@ -28,6 +28,5 @@ extension Delegate {
             if afterHosting.index != self.coordinator?.index?.wrappedValue {
                 self.coordinator?.index?.wrappedValue = afterHosting.index
             }
-            
         }
 }

@@ -34,11 +34,11 @@ extension Delegate {
                     self.coordinator?.index?.wrappedValue = hosting.index
                 }
                 self.coordinator?.externalDelegate?.indexAfterAnimation(hosting.index)
-                self.coordinator?.animated = false
                 
             } else {
                 self.coordinator?.dataSource.lastIndex = previousHosting.index
                 self.coordinator?.index?.wrappedValue = previousHosting.index
             }
+            self.coordinator?.animated = false
         }
 }
