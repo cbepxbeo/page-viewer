@@ -37,7 +37,7 @@ public struct PageView<Collection: RandomAccessCollection, Content: View>: View 
         if let externalIndex {
             return externalIndex
         }
-        return $localIndex
+        return .init(get: { self.localIndex }, set: {self.localIndex = $0})
     }
         
     public var body: some View {
