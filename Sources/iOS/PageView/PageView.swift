@@ -18,16 +18,27 @@ public struct PageView<Collection: RandomAccessCollection, Content: View>: View 
             self.delegate = nil
             self.controller = nil
             self.views = views
-            self.index = index
+            self.externalIndex = index
             self.looped = false
             self.scrollEnabled = true
         }
+    
+    @State
+    var localIndex: Int = 0
+    
     weak var delegate: PageViewDelegate? = nil
     weak var controller: PageViewController? = nil
     var looped: Bool = false
     var scrollEnabled: Bool = true
     var views: [Content]
-    let index: Binding<Int>?
+    let externalIndex: Binding<Int>?
+    
+    var index: Binding<Int> {
+        if let externalIndex {
+            return externalIndex
+        }
+        return $localIndex
+    }
         
     public var body: some View {
         PageViewRepresentable(

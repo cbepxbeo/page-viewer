@@ -48,7 +48,7 @@ extension PageView {
                     AnyView(
                         ForEach(0..<self.views.count, id: \.self){ index in
                             style.makeIndicator(
-                                selected: index == self.index?.wrappedValue,
+                                selected: index == self.index.wrappedValue,
                                 index: index
                             )
                         }
