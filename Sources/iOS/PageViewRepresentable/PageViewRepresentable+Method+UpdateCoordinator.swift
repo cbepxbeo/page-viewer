@@ -17,13 +17,17 @@ extension PageViewRepresentable {
         
         if coordinator.dataSource.views.count != self.views.count {
             coordinator.dataSource.setViews(self.views)
+            coordinator.dataSource.lastIndex = coordinator.checkIndex(
+                total:  coordinator.dataSource.total,
+                index: self.index?.wrappedValue ?? 0
+            ).nearest
             self.debugMessage(#function, "Set root View")
             if let root = context.coordinator.dataSource.root {
                 pageViewController.setViewControllers(
                     [root], direction: .forward, animated: true)
             }
         }
-        
+
         if coordinator.index == nil, let index {
             self.debugMessage(#function, "New index value")
             coordinator.index = index
@@ -48,7 +52,6 @@ extension PageViewRepresentable {
             }
         }
    
-        
         if coordinator.externalDelegate !== self.delegate {
             self.debugMessage(#function, "New Delegate")
             coordinator.externalDelegate = self.delegate

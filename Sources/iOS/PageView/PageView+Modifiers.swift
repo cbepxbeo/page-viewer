@@ -32,19 +32,49 @@ extension PageView {
         view.looped = value
         return view
     }
-    public func indicators<Style: IndicatorStyle, Body: View>(
-        _ style: Style,
-        _ content: (
-            _ content: Self,
-            _ indicators: IndicatorsConfiguration<Style>
-        ) -> Body) -> some View {
-        content(
-            self,
-            IndicatorsConfiguration(
-                range: 0..<self.views.count,
-                index: self.index?.wrappedValue,
-                style: { style }
+    
+    public func indicators<Style: IndicatorStyle>(_ style: Style) -> some View {
+        style.makeConfiguredPageView(content: { AnyView(self) }){
+            AnyView(
+                ForEach(0..<self.views.count, id: \.self){ index in
+                    style.makeIndicator(
+                        selected: index == self.index?.wrappedValue,
+                        index: index
+                    )
+                }
             )
-        )
+        }
+    }
+    
+    
+    
+    //    public func indicators<Style: IndicatorStyle, Body: View>(
+    //        _ style: Style,
+    //        _ content: (
+    //            _ content: Self,
+    //            _ indicators: IndicatorsConfiguration<Style>
+    //        ) -> Body) -> some View {
+    //        content(
+    //            self,
+    //            IndicatorsConfiguration(
+    //                range: 0..<self.views.count,
+    //                index: self.index?.wrappedValue,
+    //                style: { style }
+    //            )
+    //        )
+    //    }
+}
+struct Configuration<Style: IndicatorStyle>: View {
+    let range: Range<Int>
+    let index: Int?
+    let style: () -> Style
+    public var body: some View {
+        ForEach(range, id: \.self){ index in
+            IndicatorStorage(
+                index: index,
+                selected: index == self.index,
+                style: style
+            )
+        }
     }
 }
