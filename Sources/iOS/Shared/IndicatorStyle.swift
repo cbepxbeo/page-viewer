@@ -11,10 +11,6 @@
 
 import SwiftUI
 
-
-
-
-
 public protocol IndicatorStyle {
     associatedtype Indicator: View
     associatedtype Body: View
@@ -24,12 +20,4 @@ public protocol IndicatorStyle {
     func makeConfiguredPageView(
         content: () -> Content,
         indicators: () -> Indicators) -> Body
-}
-
-
-struct HerZnat {
-    typealias Body = Never
-}
-extension HerZnat: View {
-    var body: Never { fatalError() }
 }
