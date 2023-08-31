@@ -5,12 +5,13 @@
  Created by: Egor Boyko
  Date: 29.08.2023
  
- Status: #Complete | #Not decorated
+ Status: #Complete | #Decorated
  
  */
 
 import SwiftUI
 
+///Default indicator style
 public struct DefaultIndicatorStyle: IndicatorStyle {
     public init(){}
     public func makeIndicator(selected: Bool, index: Int) -> some View {

@@ -5,7 +5,7 @@
  Created by: Egor Boyko
  Date: 28.08.2023
  
- Status: #Complete | #Not decorated
+ Status: #Completed | #Not required
  
  */
 
@@ -39,6 +39,7 @@ extension Coordinator {
                 animated: true
             ){ value in
                 self.externalDelegate?.indexAfterAnimation(checkedIndex)
+                self.externalDelegate?.didFinishAnimating(true)
             }
             
             /*

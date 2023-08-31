@@ -5,7 +5,7 @@
  Created by: Egor Boyko
  Date: 28.08.2023
  
- Status: #Complete | #Not decorated
+ Status: #Completed | #Not required
  
  */
 
