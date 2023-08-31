@@ -66,7 +66,7 @@ extension PageView {
                     views: views
                 )
             }
-    ///Generating a Vew whitout Binding from a collection using an index and an element.
+    ///Generating a Vew without Binding from a collection using an index and an element.
     ///
     ///     let collection: [Int] = [1,2,3,4,5]
     ///
@@ -162,7 +162,7 @@ extension PageView {
                 views: views
             )
         }
-    ///Generating a Vew whitout Binding from a collection using an element.
+    ///Generating a Vew without Binding from a collection using an element.
     ///
     ///     let collection: [Int] = [1,2,3,4,5]
     ///
