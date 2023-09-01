@@ -147,7 +147,7 @@ import SwiftUI
 public struct PageView<Collection: RandomAccessCollection, Content: View>: View {
     init(
         index: Binding<Int>?,
-        views: [Content]) {
+        views: [() ->Content]) {
             self.delegate = nil
             self.controller = nil
             self.views = views
@@ -163,7 +163,7 @@ public struct PageView<Collection: RandomAccessCollection, Content: View>: View 
     weak var controller: PageViewController? = nil
     var looped: Bool = false
     var scrollEnabled: Bool = true
-    var views: [Content]
+    var views: [() -> Content]
     var externalIndex: Binding<Int>?
     
     var index: Binding<Int> {

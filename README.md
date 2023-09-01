@@ -2,8 +2,8 @@
 
 UIPageViewController adapted for use in SwiftUi AnyView
 
-## Version 2 changes
-- Reactive modifiers.
+## Version 2.0.0 changes
+- Reactive modifiers
 - New display and transition logic
 - Delegate to receive events
 - External controller for software control of transitions
@@ -15,6 +15,10 @@ UIPageViewController adapted for use in SwiftUi AnyView
 - Fixed crash of simultaneous navigation with gesture when changing index via anchor
 - Fixed loss of Binding on multiple new values at times completed
 - Limited transitions when multiple assigning a new value to the Binding index (if you quickly tap on the button that changes the index), which could lead to crashes
+
+## Version 2.0.1 changes
+- Lazy View Optimization
+- Fixed a bug that caused an extra render when enabling/disabling scroll reactively
 
 ## Installation
 
@@ -34,7 +38,7 @@ dependencies: [
 
 If you don't want to, then there is no need to create your own providers. the package provides everything you need by default.
 
-### Generating a Vew with Binding from a collection using an index and an element.
+### Generating a View with Binding from a collection using an index and an element.
 ```swift
  @State var index: Int = 0
  let collection: [Int] = [1,2,3,4,5]
@@ -49,7 +53,7 @@ If you don't want to, then there is no need to create your own providers. the pa
  }       
 ```
 
-### Generating a Vew without Binding from a collection using an index and an element.
+### Generating a View without Binding from a collection using an index and an element.
 ```swift
 let collection: [Int] = [1,2,3,4,5]
 
@@ -63,7 +67,7 @@ var body: some View {
 }
 ```     
 
-### Generating a Vew with Binding from a collection using an element.
+### Generating a View with Binding from a collection using an element.
 ```swift
  @State var index: Int = 0
  let collection: [Int] = [1,2,3,4,5]
@@ -77,7 +81,7 @@ var body: some View {
  }
 ```     
 
-### Generating a Vew without Binding from a collection using an element.
+### Generating a View without Binding from a collection using an element.
 ```swift
  let collection: [Int] = [1,2,3,4,5]
 
