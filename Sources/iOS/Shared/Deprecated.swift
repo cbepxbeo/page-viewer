@@ -16,7 +16,7 @@ public typealias PageViewerView = PageView
 
 //MARK: PageView
 extension PageView {
-    @available(*,deprecated, renamed: "looped", message: "Will not be available in the next version")
+    @available(*,deprecated, renamed: "loopedEnabled", message: "Will not be available in the next version")
     public func setCarouselMode(_ isCarousel: Bool) -> PageView {
         var view = self
         view.looped = isCarousel

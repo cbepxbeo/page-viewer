@@ -12,7 +12,7 @@
 import SwiftUI
 
 extension PageView {
-    ///Generating a Vew with Binding from a collection using an index and an element.
+    ///Generating a View with Binding from a collection using an index and an element.
     ///
     ///     @State var index: Int = 0
     ///     let collection: [Int] = [1,2,3,4,5]
@@ -66,7 +66,7 @@ extension PageView {
                     views: views
                 )
             }
-    ///Generating a Vew without Binding from a collection using an index and an element.
+    ///Generating a View without Binding from a collection using an index and an element.
     ///
     ///     let collection: [Int] = [1,2,3,4,5]
     ///
@@ -113,7 +113,7 @@ extension PageView {
                     views: views
                 )
             }
-    ///Generating a Vew with Binding from a collection using an element.
+    ///Generating a View with Binding from a collection using an element.
     ///
     ///     @State var index: Int = 0
     ///     let collection: [Int] = [1,2,3,4,5]
@@ -162,7 +162,7 @@ extension PageView {
                 views: views
             )
         }
-    ///Generating a Vew without Binding from a collection using an element.
+    ///Generating a View without Binding from a collection using an element.
     ///
     ///     let collection: [Int] = [1,2,3,4,5]
     ///

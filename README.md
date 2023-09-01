@@ -34,7 +34,7 @@ dependencies: [
 
 If you don't want to, then there is no need to create your own providers. the package provides everything you need by default.
 
-### Generating a Vew with Binding from a collection using an index and an element.
+### Generating a View with Binding from a collection using an index and an element.
 ```swift
  @State var index: Int = 0
  let collection: [Int] = [1,2,3,4,5]
@@ -49,7 +49,7 @@ If you don't want to, then there is no need to create your own providers. the pa
  }       
 ```
 
-### Generating a Vew without Binding from a collection using an index and an element.
+### Generating a View without Binding from a collection using an index and an element.
 ```swift
 let collection: [Int] = [1,2,3,4,5]
 
@@ -63,7 +63,7 @@ var body: some View {
 }
 ```     
 
-### Generating a Vew with Binding from a collection using an element.
+### Generating a View with Binding from a collection using an element.
 ```swift
  @State var index: Int = 0
  let collection: [Int] = [1,2,3,4,5]
@@ -77,7 +77,7 @@ var body: some View {
  }
 ```     
 
-### Generating a Vew without Binding from a collection using an element.
+### Generating a View without Binding from a collection using an element.
 ```swift
  let collection: [Int] = [1,2,3,4,5]
 
