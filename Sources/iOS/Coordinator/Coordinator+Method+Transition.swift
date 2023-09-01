@@ -38,6 +38,7 @@ extension Coordinator {
                 direction: navigationDirection,
                 animated: true
             ){ value in
+                self.dataSource.lastIndex = checkedIndex
                 self.externalDelegate?.indexAfterAnimation(checkedIndex)
                 self.externalDelegate?.didFinishAnimating(true)
             }

@@ -33,6 +33,7 @@ extension Delegate {
                 if self.coordinator?.index?.wrappedValue != hosting.index {
                     self.coordinator?.index?.wrappedValue = hosting.index
                 }
+                self.coordinator?.dataSource.lastIndex = hosting.index
                 self.coordinator?.externalDelegate?.indexAfterAnimation(hosting.index)
                 
             } else {
