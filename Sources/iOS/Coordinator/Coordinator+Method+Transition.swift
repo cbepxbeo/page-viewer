@@ -34,7 +34,7 @@ extension Coordinator {
             
             coordinator.dataSource.lastIndex = checkedIndex
             pageViewController.setViewControllers(
-                [coordinator.dataSource.views[checkedIndex]],
+                [coordinator.dataSource.views[checkedIndex]()],
                 direction: navigationDirection,
                 animated: true
             ){ value in

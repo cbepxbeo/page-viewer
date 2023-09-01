@@ -27,7 +27,6 @@ extension DataSource {
             }
             
             let index = hosting.index + 1 == self.total ? 0 : hosting.index + 1
-            self.lastIndex = index
-            return self.views[index]
+            return self.views[index]()
         }
 }

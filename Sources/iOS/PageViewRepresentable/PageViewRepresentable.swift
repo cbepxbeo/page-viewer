@@ -12,7 +12,7 @@
 import SwiftUI
 
 struct PageViewRepresentable<Content: View>: UIViewControllerRepresentable, Logging{
-    let views: [Content]
+    let views: [() ->Content]
     let index: Binding<Int>?
     let scrollEnabled: Bool
     let looped: Bool

@@ -103,7 +103,7 @@ extension PageView where Collection == [Never] {
             })
         self.init(
             index: binding,
-            views: views
+            views: views.map{item in { item }}
         )
     }
 }

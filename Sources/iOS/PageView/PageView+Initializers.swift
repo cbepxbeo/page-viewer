@@ -59,7 +59,7 @@ extension PageView {
             _ index: Collection.Index,
             _ element: Collection.Element) -> Content){
                 let views = Array(zip(collection.indices, collection)).map { (index, element) in
-                    content(index, element)
+                    { content(index, element) }
                 }
                 self.init(
                     index: index,
@@ -106,7 +106,7 @@ extension PageView {
             _ index: Collection.Index,
             _ element: Collection.Element) -> Content){
                 let views = Array(zip(collection.indices, collection)).map { (index, element) in
-                    content(index, element)
+                    { content(index, element) }
                 }
                 self.init(
                     index: nil,
@@ -156,7 +156,7 @@ extension PageView {
         _ collection: Collection,
         index: Binding<Int>,
         @ViewBuilder content: @escaping (_ element: Collection.Element) -> Content){
-            let views = Array(collection).map { content($0) }
+            let views = Array(collection).map { item in { content(item) } }
             self.init(
                 index: index,
                 views: views
@@ -198,7 +198,7 @@ extension PageView {
     public init(
         _ collection: Collection,
         @ViewBuilder content: @escaping (_ element: Collection.Element) -> Content){
-            let views = Array(collection).map { content($0) }
+            let views = Array(collection).map { item in { content(item) } }
             self.init(
                 index: nil,
                 views: views
@@ -231,7 +231,7 @@ extension PageView where Collection == [Never] {
     public init(views: [Content], index: Binding<Int>){
         self.init(
             index: index,
-            views: views
+            views: views.map{item in { item }}
         )
     }
     ///Create from ready-made representations in an array without Binding
@@ -252,7 +252,7 @@ extension PageView where Collection == [Never] {
     public init(views: [Content]){
         self.init(
             index: nil,
-            views: views
+            views: views.map{item in { item }}
         )
     }
 }
