@@ -144,7 +144,7 @@ import SwiftUI
 ///     }
 ///
 ///
-public struct PageView<Collection: RandomAccessCollection, Content: View, Key: Hashable & CaseIterable>: View {
+public struct PageView<Collection: RandomAccessCollection, Content: View, Key: PageViewKey>: View {
     init(
         index: Binding<Int>?,
         key: Binding<Key>?,
@@ -162,19 +162,19 @@ public struct PageView<Collection: RandomAccessCollection, Content: View, Key: H
             self.key = key
         }
     
-    @State
-    var localIndex: Int = 0
-    var indicesStorage: [Key: Int]
-    var keyStorage: [Int: Key]
-    var key: Binding<Key>?
     weak var delegate: PageViewDelegate? = nil
     weak var controller: PageViewController? = nil
     var looped: Bool = false
     var scrollEnabled: Bool = true
-    var views: [() -> Content]
     var externalIndex: Binding<Int>?
+    let views: [() -> Content]
     
-    var index: Binding<Int> {
+    @State private var localIndex: Int = 0
+    private let indicesStorage: [Key: Int]
+    private let keyStorage: [Int: Key]
+    private let key: Binding<Key>?
+   
+    private var index: Binding<Int> {
         if let externalIndex {
             return externalIndex
         }
@@ -199,21 +199,4 @@ public struct PageView<Collection: RandomAccessCollection, Content: View, Key: H
         )
         .ignoresSafeArea()
     }
-}
-public enum DefaultKey: CaseIterable, Hashable {
-    case none
-}
-
-extension PageView where Key == DefaultKey{
-    init(
-        index: Binding<Int>?,
-        views: [() ->Content]) {
-            self.init(
-                index: index,
-                key: nil,
-                indicesStorage: [:],
-                keyStorage: [:],
-                views: views
-            )
-        }
 }

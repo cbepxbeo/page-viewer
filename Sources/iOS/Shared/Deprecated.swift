@@ -46,7 +46,7 @@ extension PageView {
 
 }
 
-extension PageView where Key == DefaultKey {
+extension PageView where Key == DefaultPageViewKey {
     @available(*,deprecated, message: "Will not be available in the next version")
     public init(
         _ array: Collection,
@@ -96,7 +96,7 @@ extension PageView where Key == DefaultKey {
         }
 }
 
-extension PageView where Collection == [Never], Key == DefaultKey {
+extension PageView where Collection == [Never], Key == DefaultPageViewKey {
     @available(*,deprecated, message: "Will not be available in the next version")
     public init(views: [Content], currentPage: Binding<Int>){
         let binding: Binding<Int> =
