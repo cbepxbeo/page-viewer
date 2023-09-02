@@ -144,21 +144,29 @@ import SwiftUI
 ///     }
 ///
 ///
-public struct PageView<Collection: RandomAccessCollection, Content: View>: View {
+public struct PageView<Collection: RandomAccessCollection, Content: View, Key: Hashable & CaseIterable>: View {
     init(
         index: Binding<Int>?,
+        key: Binding<Key>?,
+        indicesStorage: [Key: Int],
+        keyStorage: [Int: Key],
         views: [() ->Content]) {
             self.delegate = nil
             self.controller = nil
             self.views = views
+            self.indicesStorage = indicesStorage
+            self.keyStorage = keyStorage
             self.externalIndex = index
             self.looped = false
             self.scrollEnabled = true
+            self.key = key
         }
     
     @State
     var localIndex: Int = 0
-    
+    var indicesStorage: [Key: Int]
+    var keyStorage: [Int: Key]
+    var key: Binding<Key>?
     weak var delegate: PageViewDelegate? = nil
     weak var controller: PageViewController? = nil
     var looped: Bool = false
@@ -169,6 +177,13 @@ public struct PageView<Collection: RandomAccessCollection, Content: View>: View 
     var index: Binding<Int> {
         if let externalIndex {
             return externalIndex
+        }
+        if let key {
+            return .init(get: { indicesStorage[key.wrappedValue] ?? 0 }, set: {
+                if let newKey = keyStorage[$0] {
+                    key.wrappedValue = newKey
+                }
+            })
         }
         return .init(get: { self.localIndex }, set: {self.localIndex = $0})
     }
@@ -184,4 +199,21 @@ public struct PageView<Collection: RandomAccessCollection, Content: View>: View 
         )
         .ignoresSafeArea()
     }
+}
+public enum DefaultKey: CaseIterable, Hashable {
+    case none
+}
+
+extension PageView where Key == DefaultKey{
+    init(
+        index: Binding<Int>?,
+        views: [() ->Content]) {
+            self.init(
+                index: index,
+                key: nil,
+                indicesStorage: [:],
+                keyStorage: [:],
+                views: views
+            )
+        }
 }

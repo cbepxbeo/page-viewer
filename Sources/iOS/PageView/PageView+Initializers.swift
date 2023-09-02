@@ -11,7 +11,7 @@
 
 import SwiftUI
 
-extension PageView {
+extension PageView where Key == DefaultKey {
     ///Generating a View with Binding from a collection using an index and an element.
     ///
     ///     @State var index: Int = 0
@@ -206,7 +206,36 @@ extension PageView {
         }
 }
 
+public struct PageViewItem<Content: View>: View {
+    let content: () -> Content
+    public var body: Never { fatalError("Cannot be used outside of PageView") }
+}
+
 extension PageView where Collection == [Never] {
+    public init(
+        selected: Binding<Key>,
+        @ViewBuilder content: @escaping (_ selected: Key) -> Content){
+            var index: Int = 0
+            var indicesStorage: [Key: Int] = [:]
+            var keyStorage: [Int : Key] = [:]
+            var views: [() -> Content] = []
+            Key.allCases.forEach { item in
+                indicesStorage[item] = index
+                keyStorage[index] = item
+                views.append( { content(item) })
+                index += 1
+            }
+            self.init(
+                index: nil,
+                key: selected,
+                indicesStorage: indicesStorage,
+                keyStorage: keyStorage,
+                views: views
+            )
+        }
+}
+
+extension PageView where Collection == [Never], Key == DefaultKey {
     ///Create from ready-made representations in an array with Binding
     ///
     ///     @State var index: Int = 0
